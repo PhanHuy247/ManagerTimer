@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Manager Timer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <!-- Title Fragment-->
+    <string name="Time">Time</string>
+    <string name="Task">Task</string>
+    <string name="Chart">Statistics</string>
+
+    <string name="setting">Setting</string>
+</resources>
