@@ -17,7 +17,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <android.support.design.widget.TabLayout
@@ -36,8 +35,8 @@
     </android.support.design.widget.CoordinatorLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/_35sdp"

@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.setting:
                 return true;
+            case R.id.delete:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
