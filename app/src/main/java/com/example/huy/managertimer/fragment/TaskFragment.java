@@ -6,17 +6,26 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.Task;
+import com.example.huy.managertimer.adapter.TasksAdapter;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class TaskFragment extends Fragment {
-
-
+    ArrayList<Task> tasks = new ArrayList<>();
+    ListView lv_tasks;
     public TaskFragment() {
         // Required empty public constructor
+        for (int i = 0; i < 20; i++) {
+            tasks.add(new Task(i, "Task "+(i+1), i*2));
+        }
+
     }
 
 
@@ -30,7 +39,13 @@ public class TaskFragment extends Fragment {
     }
 
     private void initView(View view) {
-
+        lv_tasks = (ListView) view.findViewById(R.id.lv_tasks);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        TasksAdapter taskAdapter = new TasksAdapter(tasks, getActivity());
+        lv_tasks.setAdapter(taskAdapter);
+    }
 }

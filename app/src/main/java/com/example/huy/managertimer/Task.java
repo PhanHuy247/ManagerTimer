@@ -5,4 +5,73 @@ package com.example.huy.managertimer;
  */
 
 public class Task {
+    private int color;
+    private String title;
+    private int timeGoal;
+    private int numOfSess;
+    private int WTime;
+    private double aveWTime;
+    private double ratio;
+
+    public Task(int color, String title, int timeGoal) {
+        this.color = color;
+        this.title = title;
+        this.timeGoal = timeGoal;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getTimeGoal() {
+        return timeGoal;
+    }
+
+    public void setTimeGoal(int timeGoal) {
+        this.timeGoal = timeGoal;
+    }
+
+    public int getNumOfSess() {
+        return numOfSess;
+    }
+
+    public void setNumOfSess(int numOfSess) {
+        this.numOfSess = numOfSess;
+    }
+
+    public int getWTime() {
+        return WTime;
+    }
+
+    public void setWTime(int WTime) {
+        this.WTime = WTime;
+    }
+
+    public double getAveWTime() {
+        return aveWTime;
+    }
+
+    public void setAveWTime(double aveWTime) {
+        this.aveWTime = aveWTime;
+    }
+
+    public double getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(double ratio) {
+        this.ratio = ratio;
+    }
 }

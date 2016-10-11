@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:layout_margin="@dimen/paddingDimen">
+    <View
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp"
+        android:background="@color/importanItem"
+        android:id="@+id/v_color"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/paddingDimen"
+        android:layout_marginRight="@dimen/paddingDimen"
+        android:text="Title"
+        android:textSize="24dp"
+        android:id="@+id/tv_title"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:weightSum="3">
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_circle"
+            android:id="@+id/imb_start"
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_query_builder_black_24dp"/>
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_circle"
+            android:id="@+id/imb_stat"
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_trending_up_black_24dp"/>
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/button_circle"
+            android:id="@+id/imb_setting"
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_create_black_24dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

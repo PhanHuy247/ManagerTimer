@@ -1,5 +1,6 @@
 package com.example.huy.managertimer.activity;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.design.widget.TabLayout;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.adapter.ViewPageAdapter;
 import com.example.huy.managertimer.fragment.ClockFragment;
+import com.example.huy.managertimer.fragment.SettingDialogFragment;
 import com.example.huy.managertimer.fragment.StatisticsFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
 
@@ -68,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.setting:
                 Intent intent = new Intent(this, SettingActivity.class);
                 startActivity(intent);
+//                FragmentManager fm = getFragmentManager();
+//                SettingDialogFragment dialogFragment = new SettingDialogFragment ();
+//                dialogFragment.show(fm, "Sample Fragment");
+
                 return true;
             case R.id.delete:
                 return true;
