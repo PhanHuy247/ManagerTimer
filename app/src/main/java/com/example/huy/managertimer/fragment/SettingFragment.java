@@ -12,10 +12,10 @@ import com.example.huy.managertimer.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaskFragment extends Fragment {
+public class SettingFragment extends Fragment {
 
 
-    public TaskFragment() {
+    public SettingFragment() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,7 @@ public class TaskFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_task, container, false);
+        View view = inflater.inflate(R.layout.fragment_setting, container, false);
         initView(view);
         return view;
     }

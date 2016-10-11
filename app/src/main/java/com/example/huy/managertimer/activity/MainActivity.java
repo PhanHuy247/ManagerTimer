@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.setting:
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
