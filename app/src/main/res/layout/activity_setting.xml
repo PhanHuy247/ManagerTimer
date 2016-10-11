@@ -1,18 +1,20 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.huy.managertimer.fragment.SettingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    tools:context="com.example.huy.managertimer.activity.SettingActivity">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/paddingDimen">
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/paddingDimen">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -256,4 +258,5 @@
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
-</FrameLayout>
+
+</RelativeLayout>
