@@ -5,9 +5,68 @@
     tools:context="com.example.huy.managertimer.fragment.ClockFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25:00"
+            android:textSize="48dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/tv_countDown"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_layout"
+            android:layout_below="@id/tv_countDown"
+            android:gravity="center">
+            <ImageButton
+                android:layout_width="@dimen/buttonDimen"
+                android:layout_height="@dimen/buttonDimen"
+                android:layout_margin="16dp"
+                android:id="@+id/imb_startCD"
+                android:src="@drawable/ic_timer_black_24dp"
+                android:background="@drawable/button_circle"
+                />
+            <ImageButton
+                android:layout_width="@dimen/buttonDimen"
+                android:layout_height="@dimen/buttonDimen"
+                android:layout_margin="16dp"
+                android:id="@+id/imb_break"
+                android:src="@drawable/ic_airline_seat_flat_black_24dp"
+                android:background="@drawable/button_circle"
+                android:layout_toRightOf="@id/imb_startCD"
+                />
+            <ImageButton
+                android:layout_width="@dimen/buttonDimen"
+                android:layout_height="@dimen/buttonDimen"
+                android:layout_margin="16dp"
+                android:id="@+id/imb_skip"
+                android:src="@drawable/ic_skip_next_black_24dp"
+                android:background="@drawable/button_circle"
+                android:visibility="gone"/>
+            <ImageButton
+                android:layout_width="@dimen/buttonDimen"
+                android:layout_height="@dimen/buttonDimen"
+                android:layout_margin="16dp"
+                android:id="@+id/imb_pause"
+                android:src="@drawable/ic_pause_black_24dp"
+                android:background="@drawable/button_circle"
+                android:layout_toRightOf="@id/imb_skip"
+                android:visibility="gone"/>
+            <ImageButton
+                android:layout_width="@dimen/buttonDimen"
+                android:layout_height="@dimen/buttonDimen"
+                android:layout_margin="16dp"
+                android:id="@+id/imb_stop"
+                android:src="@drawable/ic_stop_black_24dp"
+                android:background="@drawable/button_circle"
+                android:layout_toRightOf="@id/imb_pause"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
 
 </FrameLayout>

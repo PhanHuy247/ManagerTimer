@@ -5,4 +5,5 @@
     <dimen name="paddingDimen">16dp</dimen>
     <dimen name="paddingTopLine">8dp</dimen>
     <dimen name="titleSize">16dp</dimen>
+    <dimen name="buttonDimen">48dp</dimen>
 </resources>

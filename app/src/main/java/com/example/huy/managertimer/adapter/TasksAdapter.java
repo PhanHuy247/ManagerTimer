@@ -1,9 +1,6 @@
 package com.example.huy.managertimer.adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +13,6 @@ import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Laptop88 on 10/11/2016.
@@ -54,7 +50,7 @@ public class TasksAdapter extends BaseAdapter{
             TaskHolder holder = new TaskHolder();
             holder.v_color =  convertView.findViewById(R.id.v_color);
             holder.tv_title = (TextView)convertView.findViewById(R.id.tv_title);
-            holder.imb_start = (ImageButton) convertView.findViewById(R.id.imb_start);
+            holder.imb_start = (ImageButton) convertView.findViewById(R.id.imb_startCD);
             holder.imb_stat = (ImageButton) convertView.findViewById(R.id.imb_stat);
             holder.imb_setting = (ImageButton) convertView.findViewById(R.id.imb_setting);
             convertView.setTag(holder);
@@ -77,7 +73,7 @@ public class TasksAdapter extends BaseAdapter{
 
             public void onClick(View v) {
                 switch (v.getId()){
-                    case R.id.imb_start:
+                    case R.id.imb_startCD:
                         Toast.makeText(mContext, "Start", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.imb_stat:
