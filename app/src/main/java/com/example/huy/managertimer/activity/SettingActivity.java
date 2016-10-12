@@ -48,7 +48,7 @@ public class SettingActivity extends AppCompatActivity{
     public static final String S_SILENCE_MODE = "saved_silence_mode";
     public static final String S_WIFI_MODE = "saved_wifi_mode";
 
-    SharedPreferences preferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,23 +160,15 @@ public class SettingActivity extends AppCompatActivity{
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (seekBar.getProgress()==0){
+                    seekBar.setProgress(1);
+                }
             }
         });
     }
 
     private void initSetting() {
-        preferences = getPreferences(Context.MODE_PRIVATE);
-        wTime = preferences.getInt(S_WTIME, wTime);
-        bTime = preferences.getInt(S_BTIME, bTime);
-        lBTime = preferences.getInt(S_LBTIME, lBTime);
-        nOSess = preferences.getInt(S_NOSESS, nOSess);
-        vol = preferences.getInt(S_VOL, vol);
-        lBTimeMode = preferences.getBoolean(S_LBTIME_MODE, lBTimeMode);
-        shakeMode = preferences.getBoolean(S_SHAKE_MODE, shakeMode);
-        soundMode = preferences.getBoolean(S_SOUND_MODE, soundMode);
-        silenceMode = preferences.getBoolean(S_SILENCE_MODE, silenceMode);
-        wifiMode = preferences.getBoolean(S_WIFI_MODE, wifiMode);
+
 
 
         tv_wTime.setText(wTime+"");
@@ -246,6 +238,7 @@ public class SettingActivity extends AppCompatActivity{
         lBTime = sb_longBTime.getProgress();
         nOSess = sb_SessBefLongBTime.getProgress();
         vol = sb_volume.getProgress();
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(S_WTIME, wTime);
         editor.putInt(S_BTIME, bTime);

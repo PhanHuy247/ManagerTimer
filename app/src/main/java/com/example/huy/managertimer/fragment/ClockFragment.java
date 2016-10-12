@@ -1,10 +1,13 @@
 package com.example.huy.managertimer.fragment;
 
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -19,6 +22,27 @@ import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.services.CountdownService;
 
+import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
+import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME;
+import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME_MODE;
+import static com.example.huy.managertimer.activity.SettingActivity.S_NOSESS;
+import static com.example.huy.managertimer.activity.SettingActivity.S_SHAKE_MODE;
+import static com.example.huy.managertimer.activity.SettingActivity.S_SILENCE_MODE;
+import static com.example.huy.managertimer.activity.SettingActivity.S_SOUND_MODE;
+import static com.example.huy.managertimer.activity.SettingActivity.S_VOL;
+import static com.example.huy.managertimer.activity.SettingActivity.S_WIFI_MODE;
+import static com.example.huy.managertimer.activity.SettingActivity.S_WTIME;
+import static com.example.huy.managertimer.activity.SettingActivity.bTime;
+import static com.example.huy.managertimer.activity.SettingActivity.lBTime;
+import static com.example.huy.managertimer.activity.SettingActivity.lBTimeMode;
+import static com.example.huy.managertimer.activity.SettingActivity.nOSess;
+import static com.example.huy.managertimer.activity.SettingActivity.shakeMode;
+import static com.example.huy.managertimer.activity.SettingActivity.silenceMode;
+import static com.example.huy.managertimer.activity.SettingActivity.soundMode;
+import static com.example.huy.managertimer.activity.SettingActivity.vol;
+import static com.example.huy.managertimer.activity.SettingActivity.wTime;
+import static com.example.huy.managertimer.activity.SettingActivity.wifiMode;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -28,10 +52,14 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
 //    public static boolean isRelaxing;
     public static TextView tv_countdown;
     ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
+    ImageButton imb_isWorking, imb_isRelaxing;
     public static ImageButton imb_pause;
     public static boolean isCounting;
+    public static boolean isOnSess;
     private boolean isBound = false;
     ServiceConnection connection;
+    public static String curCountdownStr;
+    private MyBroadcastReceiver broadcastReceiver;
     public ClockFragment() {
         // Required empty public constructor
     }
@@ -42,9 +70,17 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_clock, container, false);
+        setBroadcastReceiver();
         initView(view);
         setOnClick();
         return view;
+    }
+
+    private void setBroadcastReceiver() {
+        broadcastReceiver = new MyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(mService.ACTION_FINISH);
+        getActivity().registerReceiver(broadcastReceiver, filter);
     }
 
     private void setOnClick() {
@@ -57,34 +93,79 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
 
     private void initView(View view) {
         tv_countdown = (TextView) view.findViewById(R.id.tv_countDown);
-        setTextForCountdownTimer();
         imb_start = (ImageButton) view.findViewById(R.id.imb_startCD);
         imb_skipNext = (ImageButton) view.findViewById(R.id.imb_skip);
         imb_pause = (ImageButton) view.findViewById(R.id.imb_pause);
         imb_break = (ImageButton) view.findViewById(R.id.imb_break);
         imb_stop = (ImageButton) view.findViewById(R.id.imb_stop);
+        imb_isWorking = (ImageButton) view.findViewById(R.id.imb_isWorking);
+        imb_isRelaxing = (ImageButton) view.findViewById(R.id.imb_isRelaxing);
+        if (!isCounting){
+            imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+
+        }
+        tv_countdown.setText(curCountdownStr);
+        getPreferencesData();
+        if (isOnSess){
+            imb_start.setVisibility(View.GONE);
+            imb_break.setVisibility(View.GONE);
+            imb_skipNext.setVisibility(View.VISIBLE);
+            imb_pause.setVisibility(View.VISIBLE);
+            imb_stop.setVisibility(View.VISIBLE);
+            if (isWorking){
+                imb_isWorking.setVisibility(View.VISIBLE);
+                imb_isRelaxing.setVisibility(View.GONE);
+            }
+            else {
+                imb_isWorking.setVisibility(View.GONE);
+                imb_isRelaxing.setVisibility(View.VISIBLE);
+            }
+
+        }
+        else {
+            imb_start.setVisibility(View.VISIBLE);
+            imb_break.setVisibility(View.VISIBLE);
+            imb_skipNext.setVisibility(View.GONE);
+            imb_pause.setVisibility(View.GONE);
+            imb_stop.setVisibility(View.GONE);
+            tv_countdown.setText(""+wTime+" : 00");
+        }
     }
 
-    private void setTextForCountdownTimer() {
-
+    private void getPreferencesData() {
+        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
+        wTime = preferences.getInt(S_WTIME, wTime);
+        bTime = preferences.getInt(S_BTIME, bTime);
+        lBTime = preferences.getInt(S_LBTIME, lBTime);
+        nOSess = preferences.getInt(S_NOSESS, nOSess);
+        vol = preferences.getInt(S_VOL, vol);
+        lBTimeMode = preferences.getBoolean(S_LBTIME_MODE, lBTimeMode);
+        shakeMode = preferences.getBoolean(S_SHAKE_MODE, shakeMode);
+        soundMode = preferences.getBoolean(S_SOUND_MODE, soundMode);
+        silenceMode = preferences.getBoolean(S_SILENCE_MODE, silenceMode);
+        wifiMode = preferences.getBoolean(S_WIFI_MODE, wifiMode);
     }
+
+
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.imb_startCD:
                 isCounting = true;
+                isWorking = true;
+                isOnSess = true;
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);
                 imb_pause.setVisibility(View.VISIBLE);
                 imb_stop.setVisibility(View.VISIBLE);
-                isWorking = true;
                 setUpService();
                 break;
             case R.id.imb_break:
                 isCounting = true;
                 isWorking = false;
+                isOnSess = true;
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);
@@ -96,6 +177,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 if (isCounting){
                     imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                     isCounting = false;
+
                     mService.mCountdownTimer.cancel();
                 }
                 else {
@@ -111,11 +193,20 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 else {
                     isWorking = true;
                 }
+                imb_start.setVisibility(View.GONE);
+                imb_break.setVisibility(View.GONE);
+                imb_skipNext.setVisibility(View.VISIBLE);
+                imb_pause.setVisibility(View.VISIBLE);
+                imb_stop.setVisibility(View.VISIBLE);
                 mService.mCountdownTimer.cancel();
                 setUpService();
                 break;
             case R.id.imb_stop:
                 isCounting = false;
+                isOnSess = false;
+                tv_countdown.setText(""+wTime+" : 00");
+                imb_isWorking.setVisibility(View.GONE);
+                imb_isRelaxing.setVisibility(View.GONE);
                 imb_start.setVisibility(View.VISIBLE);
                 imb_break.setVisibility(View.VISIBLE);
                 imb_skipNext.setVisibility(View.GONE);
@@ -150,16 +241,46 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         Intent intent = new Intent(getActivity(), CountdownService.class);
         int a;
         if (isWorking){
-            a = SettingActivity.wTime;
+            a = wTime;
+            imb_isWorking.setVisibility(View.VISIBLE);
+            imb_isRelaxing.setVisibility(View.GONE);
         }
         else {
-            a= SettingActivity.bTime;
+            a= bTime;
+            imb_isRelaxing.setVisibility(View.VISIBLE);
+            imb_isWorking.setVisibility(View.GONE);
         }
         intent.putExtra("timeInMin", a);
         getActivity().startService(intent);
         if (isBound==false){
             getActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE);
             isBound = true;
+        }
+    }
+    private class MyBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(mService.ACTION_FINISH)){
+                imb_isWorking.setVisibility(View.GONE);
+                imb_isRelaxing.setVisibility(View.GONE);
+                if (isWorking){
+                    tv_countdown.setText(bTime+" : 00");
+                    imb_break.setVisibility(View.VISIBLE);
+                    imb_pause.setVisibility(View.GONE);
+                    imb_stop.setVisibility(View.GONE);
+                    imb_start.setVisibility(View.GONE);
+                    isWorking = false;
+                }
+                else {
+                    tv_countdown.setText(wTime+" : 00");
+                    imb_start.setVisibility(View.VISIBLE);
+                    imb_pause.setVisibility(View.GONE);
+                    imb_stop.setVisibility(View.GONE);
+                    imb_break.setVisibility(View.GONE);
+                    isWorking = true;
+                }
+            }
         }
     }
 

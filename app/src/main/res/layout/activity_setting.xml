@@ -43,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/paddingDimen"
                 android:max="120"
+
                 android:progress="25"
                 android:id="@+id/sb_workTime"/>
             <LinearLayout

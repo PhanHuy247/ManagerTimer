@@ -17,6 +17,7 @@ public class CountdownService extends Service {
     }
     public CountDownTimer mCountdownTimer;
     public long millisLeft;
+    public static final String ACTION_FINISH = "done";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -32,13 +33,16 @@ public class CountdownService extends Service {
             public void onTick(long millisUntilFinished) {
                 int min = (int) millisUntilFinished/(60000);
                 int sec = (int) ((millisUntilFinished%(60000))/1000);
-                ClockFragment.tv_countdown.setText(min+" : "+sec);
+                String text = min+" : "+sec;
+                ClockFragment.tv_countdown.setText(text);
                 millisLeft = millisUntilFinished;
                 ClockFragment.imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
+                ClockFragment.curCountdownStr = text;
             }
 
             public void onFinish() {
-                ClockFragment.tv_countdown.setText("Done");
+                Intent intent = new Intent(ACTION_FINISH);
+                sendBroadcast(intent);
                 stopSelf();
             }
         }.start();

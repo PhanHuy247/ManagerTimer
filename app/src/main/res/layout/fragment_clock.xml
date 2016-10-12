@@ -8,13 +8,30 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="25:00"
+
             android:textSize="48dp"
             android:layout_centerInParent="true"
             android:id="@+id/tv_countDown"/>
+        <ImageButton
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:background="@drawable/ic_airline_seat_recline_normal_black_24dp"
+            android:id="@+id/imb_isWorking"
+            android:layout_above="@id/tv_countDown"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+        <ImageButton
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:background="@drawable/ic_airline_seat_flat_black_24dp"
+            android:id="@+id/imb_isRelaxing"
+            android:layout_above="@id/tv_countDown"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +43,8 @@
                 android:layout_height="@dimen/buttonDimen"
                 android:layout_margin="16dp"
                 android:id="@+id/imb_startCD"
-                android:src="@drawable/ic_timer_black_24dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_airline_seat_recline_normal_black_24dp"
                 android:background="@drawable/button_circle"
                 />
             <ImageButton
@@ -34,6 +52,7 @@
                 android:layout_height="@dimen/buttonDimen"
                 android:layout_margin="16dp"
                 android:id="@+id/imb_break"
+                android:visibility="gone"
                 android:src="@drawable/ic_airline_seat_flat_black_24dp"
                 android:background="@drawable/button_circle"
                 android:layout_toRightOf="@id/imb_startCD"
@@ -43,6 +62,7 @@
                 android:layout_height="@dimen/buttonDimen"
                 android:layout_margin="16dp"
                 android:id="@+id/imb_skip"
+                android:layout_toRightOf="@id/imb_break"
                 android:src="@drawable/ic_skip_next_black_24dp"
                 android:background="@drawable/button_circle"
                 android:visibility="gone"/>
