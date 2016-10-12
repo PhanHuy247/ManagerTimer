@@ -89,7 +89,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thời gian nghỉ dài (phút):" />
+                    android:text="Thời gian nghỉ dài (phút):"
+                    android:id="@+id/tv_lBreak"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,13 +112,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Số phiên làm việc trước phiên nghỉ dài:" />
+                    android:text="Số phiên làm việc trước phiên nghỉ dài:"
+                    android:id="@+id/tv_SessBefLongBreak"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="4"
                     android:gravity="right"
-                    android:id="@+id/tv_numOfTurn"/>
+                    android:id="@+id/tv_SessBefLongBTime"/>
             </LinearLayout>
             <SeekBar
                 android:layout_width="match_parent"
@@ -125,7 +127,7 @@
                 android:padding="@dimen/paddingDimen"
                 android:max="10"
                 android:progress="4"
-                android:id="@+id/sb_numOfTurn"
+                android:id="@+id/sb_SessBefLongBTime"
                 />
             <View
                 android:layout_width="match_parent"
@@ -166,7 +168,7 @@
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/sw_sound"
+                    android:id="@+id/sw_soundMode"
                     android:checked="true"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -197,6 +199,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="8dp"
+                    android:max="100"
+                    android:progress="50"
                     android:id="@+id/sb_volume"
                     android:layout_toRightOf="@id/tv_volume"/>
             </RelativeLayout>
@@ -239,7 +243,7 @@
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/sw_soundMode"
+                    android:id="@+id/sw_silenceMode"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
             <RelativeLayout
