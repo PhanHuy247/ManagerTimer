@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.fragment.ClockFragment;
 
@@ -33,6 +34,7 @@ public class CountdownService extends Service {
                 int sec = (int) ((millisUntilFinished%(60000))/1000);
                 ClockFragment.tv_countdown.setText(min+" : "+sec);
                 millisLeft = millisUntilFinished;
+                ClockFragment.imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
             }
 
             public void onFinish() {

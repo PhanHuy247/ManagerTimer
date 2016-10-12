@@ -27,7 +27,8 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     public static boolean isWorking;
 //    public static boolean isRelaxing;
     public static TextView tv_countdown;
-    ImageButton imb_start, imb_skipNext, imb_pause, imb_break, imb_stop;
+    ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
+    public static ImageButton imb_pause;
     public static boolean isCounting;
     private boolean isBound = false;
     ServiceConnection connection;
@@ -95,15 +96,15 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 if (isCounting){
                     imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                     isCounting = false;
-//                    mService.mCountdownTimer.cancel();
+                    mService.mCountdownTimer.cancel();
                 }
                 else {
-                    imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
                     isCounting = true;
-//                    mService.setUpCountdownTimer(mService.millisLeft);
+                    mService.setUpCountdownTimer(mService.millisLeft);
                 }
                 break;
             case R.id.imb_skip:
+                isCounting = true;
                 if (isWorking){
                     isWorking = false;
                 }
