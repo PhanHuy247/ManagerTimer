@@ -73,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
 //                FragmentManager fm = getFragmentManager();
 //                SettingDialogFragment dialogFragment = new SettingDialogFragment ();
 //                dialogFragment.show(fm, "Sample Fragment");
-
-                return true;
-            case R.id.delete:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
