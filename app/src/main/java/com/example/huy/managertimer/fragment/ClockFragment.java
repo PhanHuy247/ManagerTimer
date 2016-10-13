@@ -50,12 +50,14 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     public static CountdownService mService = null;
     public static boolean isWorking;
 //    public static boolean isRelaxing;
+
     public static TextView tv_countdown;
     ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
     ImageButton imb_isWorking, imb_isRelaxing;
     public static ImageButton imb_pause;
     public static boolean isCounting;
     public static boolean isOnSess;
+    public static boolean hasNext;
     private boolean isBound = false;
     ServiceConnection connection;
     public static String curCountdownStr;
@@ -104,9 +106,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
 
         }
-        tv_countdown.setText(curCountdownStr);
         getPreferencesData();
         if (isOnSess){
+            tv_countdown.setText(curCountdownStr);
             imb_start.setVisibility(View.GONE);
             imb_break.setVisibility(View.GONE);
             imb_skipNext.setVisibility(View.VISIBLE);
@@ -123,12 +125,35 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
 
         }
         else {
-            imb_start.setVisibility(View.VISIBLE);
-            imb_break.setVisibility(View.VISIBLE);
-            imb_skipNext.setVisibility(View.GONE);
-            imb_pause.setVisibility(View.GONE);
-            imb_stop.setVisibility(View.GONE);
-            tv_countdown.setText(""+wTime+" : 00");
+            if (hasNext){
+                if (isWorking){
+                    tv_countdown.setText(""+bTime+" : 00");
+                    imb_start.setVisibility(View.GONE);
+                    imb_break.setVisibility(View.VISIBLE);
+                    imb_skipNext.setVisibility(View.VISIBLE);
+                    imb_pause.setVisibility(View.GONE);
+                    imb_stop.setVisibility(View.GONE);
+                }
+                else {
+                    tv_countdown.setText(""+wTime+" : 00");
+                    imb_start.setVisibility(View.VISIBLE);
+                    imb_break.setVisibility(View.GONE);
+                    imb_skipNext.setVisibility(View.VISIBLE);
+                    imb_pause.setVisibility(View.GONE);
+                    imb_stop.setVisibility(View.GONE);
+                }
+            }
+            else {
+                tv_countdown.setText(""+wTime+" : 00");
+                imb_start.setVisibility(View.VISIBLE);
+                imb_break.setVisibility(View.VISIBLE);
+                imb_skipNext.setVisibility(View.GONE);
+                imb_pause.setVisibility(View.GONE);
+                imb_stop.setVisibility(View.GONE);
+            }
+
+
+
         }
     }
 
@@ -154,7 +179,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             case R.id.imb_startCD:
                 isCounting = true;
                 isWorking = true;
-                isOnSess = true;
+
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);
@@ -165,7 +190,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             case R.id.imb_break:
                 isCounting = true;
                 isWorking = false;
-                isOnSess = true;
+
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);
@@ -186,13 +211,21 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 }
                 break;
             case R.id.imb_skip:
-                isCounting = true;
-                if (isWorking){
-                    isWorking = false;
+                if (isOnSess){
+                    if (isWorking){
+                        isWorking = false;
+                    }
+                    else {
+                        isWorking = true;
+                    }
                 }
                 else {
-                    isWorking = true;
+                    Log.d("khuong", isWorking+"");
                 }
+
+
+                isCounting = true;
+
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);
@@ -212,7 +245,6 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 imb_skipNext.setVisibility(View.GONE);
                 imb_pause.setVisibility(View.GONE);
                 imb_stop.setVisibility(View.GONE);
-                mService.stopSelf();
                 mService.mCountdownTimer.cancel();
                 break;
         }
@@ -250,11 +282,17 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             imb_isRelaxing.setVisibility(View.VISIBLE);
             imb_isWorking.setVisibility(View.GONE);
         }
-        intent.putExtra("timeInMin", a);
-        getActivity().startService(intent);
+        isOnSess = true;
         if (isBound==false){
+            intent.putExtra("timeInMin", a);
+            getActivity().startService(intent);
             getActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE);
             isBound = true;
+        }
+        else {
+
+            mService.setUpCountdownTimer(a*60000);
+
         }
     }
     private class MyBroadcastReceiver extends BroadcastReceiver{
@@ -262,6 +300,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(mService.ACTION_FINISH)){
+
                 imb_isWorking.setVisibility(View.GONE);
                 imb_isRelaxing.setVisibility(View.GONE);
                 if (isWorking){
@@ -270,7 +309,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                     imb_pause.setVisibility(View.GONE);
                     imb_stop.setVisibility(View.GONE);
                     imb_start.setVisibility(View.GONE);
-                    isWorking = false;
+
                 }
                 else {
                     tv_countdown.setText(wTime+" : 00");
@@ -278,7 +317,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                     imb_pause.setVisibility(View.GONE);
                     imb_stop.setVisibility(View.GONE);
                     imb_break.setVisibility(View.GONE);
-                    isWorking = true;
+
                 }
             }
         }
