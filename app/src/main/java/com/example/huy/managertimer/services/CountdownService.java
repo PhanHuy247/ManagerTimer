@@ -12,12 +12,14 @@ import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.activity.MainActivity;
 import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.fragment.ClockFragment;
+import com.example.huy.managertimer.fragment.TaskFragment;
 
 public class CountdownService extends Service {
     public static final String ACTION_PLAY = "action_play";
@@ -26,6 +28,7 @@ public class CountdownService extends Service {
     public static final String ACTION_PREVIOUS = "action_previous";
     public static final String ACTION_STOP = "action_stop";
     public static final int NOTIFY_ID = 1912;
+
     public CountdownService() {
     }
     public CountDownTimer mCountdownTimer;
@@ -42,7 +45,7 @@ public class CountdownService extends Service {
         return START_NOT_STICKY;
     }
 
-    public void setUpCountdownTimer(long time) {
+    public void setUpCountdownTimer(final long time) {
         artwork = BitmapFactory.decodeResource(getResources(), R.drawable.brain_power);
 
 
@@ -55,20 +58,36 @@ public class CountdownService extends Service {
         mCountdownTimer = new CountDownTimer(time, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                int min = (int) millisUntilFinished/(60000);
-                int sec = (int) ((millisUntilFinished%(60000))/1000);
+                int min = (int) (millisUntilFinished/60000);
+                int sec = (int) ((millisUntilFinished%60000)/1000);
                 String text = min+" : "+sec;
                 ClockFragment.tv_countdown.setText(text);
                 millisLeft = millisUntilFinished;
                 ClockFragment.imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
                 ClockFragment.curCountdownStr = text;
+
             }
 
             public void onFinish() {
+
+                if (ClockFragment.isWorking){
+                    if (ClockFragment.position!=-1){
+                        int wTime = TaskFragment.tasks.get(ClockFragment.position).getWTime()+(int) (time/60000);
+                        TaskFragment.tasks.get(ClockFragment.position).setWTime(wTime);
+                        Log.d("workTime", wTime+"");
+                    }
+                    else {
+                        int wTime = TaskFragment.defaultTask.getWTime() + (int) (time/60000);
+                        TaskFragment.defaultTask.setWTime(wTime);
+                        Log.d("workTime", wTime+"");
+                    }
+
+                }
                 ClockFragment.hasNext = true;
                 Intent intent = new Intent(ACTION_FINISH);
                 sendBroadcast(intent);
                 ClockFragment.isOnSess = false;
+
             }
         }.start();
     }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
  */
 public class TaskFragment extends Fragment {
     public static ArrayList<Task> tasks = new ArrayList<>();
+    public static Task defaultTask = new Task(0, "");
     ListView lv_tasks;
     public TaskFragment() {
         // Required empty public constructor
