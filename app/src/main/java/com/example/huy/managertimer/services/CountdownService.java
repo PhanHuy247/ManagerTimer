@@ -4,7 +4,11 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
@@ -16,10 +20,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.activity.MainActivity;
 import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.fragment.ClockFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
+import com.google.gson.Gson;
 
 public class CountdownService extends Service {
     public static final String ACTION_PLAY = "action_play";
@@ -28,6 +34,7 @@ public class CountdownService extends Service {
     public static final String ACTION_PREVIOUS = "action_previous";
     public static final String ACTION_STOP = "action_stop";
     public static final int NOTIFY_ID = 1912;
+    private NotiReceiver receiver;
 
     public CountdownService() {
     }
@@ -39,12 +46,22 @@ public class CountdownService extends Service {
     PendingIntent pendInt;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        setBroadcastReceiver();
         int timeInMin = intent.getIntExtra("timeInMin", 25);
         long timeInMilliSec = timeInMin*60000;
         setUpCountdownTimer(timeInMilliSec);
         return START_NOT_STICKY;
     }
+    private void setBroadcastReceiver() {
+        receiver = new NotiReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_NEXT);
+        filter.addAction(ACTION_PAUSE);
+        filter.addAction(ACTION_PREVIOUS);
+        filter.addAction(ACTION_STOP);
+        registerReceiver(receiver, filter);
 
+    }
     public void setUpCountdownTimer(final long time) {
         artwork = BitmapFactory.decodeResource(getResources(), R.drawable.brain_power);
 
@@ -187,7 +204,37 @@ public class CountdownService extends Service {
     @Override
     public void onDestroy() {
         Toast.makeText(getApplicationContext(), "Service was terminated!", Toast.LENGTH_SHORT).show();
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.tasks_infos), MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        for (Task task:TaskFragment.tasks){
+            String json = gson.toJson(task); // myObject - instance of MyObject
+            prefsEditor.putString(task.getTitle(), json);
+        }
+        String json = gson.toJson(TaskFragment.defaultTask);
+        prefsEditor.putString(getString(R.string.defaultTask), json);
+        prefsEditor.commit();
+        Log.d("saveData", TaskFragment.defaultTask.getWTime()+"");
         super.onDestroy();
+    }
+    private class NotiReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_NEXT)){
+
+
+            }
+            else if (intent.getAction().equals(ACTION_PAUSE)){
+
+
+
+            }
+            else if (intent.getAction().equals(ACTION_STOP)){
+                mCountdownTimer.cancel();
+                stopForeground(true);
+            }
+
+        }
     }
 
     @Nullable

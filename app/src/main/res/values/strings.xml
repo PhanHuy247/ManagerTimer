@@ -13,6 +13,8 @@
     <string name="work">Work</string>
     <string name="reset_all">reset All</string>
     <string name="setting_pref">com.example.25min.SETTING_PREF</string>
+    <string name="tasks_infos">com.example.25min.TASKS_INFOS</string>
+    <string name="defaultTask">defaultTask</string>
 
 
 </resources>

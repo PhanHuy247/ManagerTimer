@@ -23,6 +23,7 @@ import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.services.CountdownService;
+import com.google.gson.Gson;
 
 import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME;
@@ -208,17 +209,37 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     }
 
     private void getPreferencesData() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
-        wTime = preferences.getInt(S_WTIME, wTime);
-        bTime = preferences.getInt(S_BTIME, bTime);
-        lBTime = preferences.getInt(S_LBTIME, lBTime);
-        nOSess = preferences.getInt(S_NOSESS, nOSess);
-        vol = preferences.getInt(S_VOL, vol);
-        lBTimeMode = preferences.getBoolean(S_LBTIME_MODE, lBTimeMode);
-        shakeMode = preferences.getBoolean(S_SHAKE_MODE, shakeMode);
-        soundMode = preferences.getBoolean(S_SOUND_MODE, soundMode);
-        silenceMode = preferences.getBoolean(S_SILENCE_MODE, silenceMode);
-        wifiMode = preferences.getBoolean(S_WIFI_MODE, wifiMode);
+        SharedPreferences settingPrefs = getActivity().getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
+        wTime = settingPrefs.getInt(S_WTIME, wTime);
+        bTime = settingPrefs.getInt(S_BTIME, bTime);
+        lBTime = settingPrefs.getInt(S_LBTIME, lBTime);
+        nOSess = settingPrefs.getInt(S_NOSESS, nOSess);
+        vol = settingPrefs.getInt(S_VOL, vol);
+        lBTimeMode = settingPrefs.getBoolean(S_LBTIME_MODE, lBTimeMode);
+        shakeMode = settingPrefs.getBoolean(S_SHAKE_MODE, shakeMode);
+        soundMode = settingPrefs.getBoolean(S_SOUND_MODE, soundMode);
+        silenceMode = settingPrefs.getBoolean(S_SILENCE_MODE, silenceMode);
+        wifiMode = settingPrefs.getBoolean(S_WIFI_MODE, wifiMode);
+
+        if (!isBound){
+            SharedPreferences tasksPrefs = getActivity().getSharedPreferences(getString(R.string.tasks_infos), Context.MODE_PRIVATE);
+            Gson gson = new Gson();
+            for (Task task:TaskFragment.tasks){
+                String json = tasksPrefs.getString(task.getTitle(), "");
+                Task tmp = gson.fromJson(json, Task.class);
+                if (tmp!=null){
+                    task = tmp;
+                }
+            }
+            String json = tasksPrefs.getString(getString(R.string.defaultTask), "");
+            Task tmp = gson.fromJson(json, Task.class);
+            if (tmp!=null){
+                TaskFragment.defaultTask = tmp;
+            }
+            Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
+        }
+
+
     }
 
 
