@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.services.CountdownService;
 
@@ -49,15 +51,18 @@ import static com.example.huy.managertimer.activity.SettingActivity.wifiMode;
 public class ClockFragment extends Fragment implements View.OnClickListener{
     public static CountdownService mService = null;
     public static boolean isWorking;
+    public static final Task DEF_TASK = new Task(0, "");
 //    public static boolean isRelaxing;
-
+    public static  Task curTask = DEF_TASK;
     public static TextView tv_countdown;
     ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
     ImageButton imb_isWorking, imb_isRelaxing;
+    TextView tv_taskTitle;
     public static ImageButton imb_pause;
     public static boolean isCounting;
     public static boolean isOnSess;
     public static boolean hasNext;
+    public static int position = -1;
     private boolean isBound = false;
     ServiceConnection connection;
     public static String curCountdownStr;
@@ -72,10 +77,37 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_clock, container, false);
+
+
         setBroadcastReceiver();
         initView(view);
         setOnClick();
         return view;
+    }
+
+    private void resetCoundownTimer(int position) {
+        tv_taskTitle.setText(TaskFragment.tasks.get(position).getTitle());
+
+        imb_start.setVisibility(View.GONE);
+        imb_break.setVisibility(View.GONE);
+        imb_skipNext.setVisibility(View.VISIBLE);
+        imb_pause.setVisibility(View.VISIBLE);
+        imb_stop.setVisibility(View.VISIBLE);
+        imb_isWorking.setVisibility(View.VISIBLE);
+        imb_isRelaxing.setVisibility(View.GONE);
+        tv_countdown.setText(wTime+" : 00");
+        isOnSess = true;
+        isWorking = true;
+        isCounting = true;
+        if (mService!=null){
+            mService.mCountdownTimer.cancel();
+            mService.setUpCountdownTimer(wTime*60000);
+        }
+        else {
+            setUpService();
+        }
+
+
     }
 
     private void setBroadcastReceiver() {
@@ -102,11 +134,29 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_stop = (ImageButton) view.findViewById(R.id.imb_stop);
         imb_isWorking = (ImageButton) view.findViewById(R.id.imb_isWorking);
         imb_isRelaxing = (ImageButton) view.findViewById(R.id.imb_isRelaxing);
+        tv_taskTitle = (TextView) view.findViewById(R.id.tv_taskTitle);
         if (!isCounting){
             imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
 
         }
         getPreferencesData();
+        int temp = getActivity().getIntent().getIntExtra("position", -1);
+        if (position!=temp && temp!=-1){
+            position = temp;
+            resetCoundownTimer(position);
+        }
+        else {
+            String tmp;
+            if (position==-1){
+                 tmp = "";
+
+            }
+            else {
+                tmp = TaskFragment.tasks.get(position).getTitle();
+            }
+            tv_taskTitle.setText(tmp);
+
+        }
         if (isOnSess){
             tv_countdown.setText(curCountdownStr);
             imb_start.setVisibility(View.GONE);
@@ -190,7 +240,6 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             case R.id.imb_break:
                 isCounting = true;
                 isWorking = false;
-
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);

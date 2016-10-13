@@ -1,6 +1,7 @@
 package com.example.huy.managertimer.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
+import com.example.huy.managertimer.activity.MainActivity;
 
 import java.util.ArrayList;
 
@@ -50,7 +52,7 @@ public class TasksAdapter extends BaseAdapter{
             TaskHolder holder = new TaskHolder();
             holder.v_color =  convertView.findViewById(R.id.v_color);
             holder.tv_title = (TextView)convertView.findViewById(R.id.tv_title);
-            holder.imb_start = (ImageButton) convertView.findViewById(R.id.imb_startCD);
+            holder.imb_start = (ImageButton) convertView.findViewById(R.id.imb_start);
             holder.imb_stat = (ImageButton) convertView.findViewById(R.id.imb_stat);
             holder.imb_setting = (ImageButton) convertView.findViewById(R.id.imb_setting);
             convertView.setTag(holder);
@@ -59,13 +61,13 @@ public class TasksAdapter extends BaseAdapter{
         TaskHolder holder = (TaskHolder) convertView.getTag();
         holder.v_color.setBackgroundColor(mContext.getResources().getColor(R.color.importanItem));
         holder.tv_title.setText(getItem(position).getTitle());
-        setOnButtonClick(holder.imb_start);
-        setOnButtonClick(holder.imb_stat);
-        setOnButtonClick(holder.imb_setting);
+        setOnButtonClick(holder.imb_start, position);
+        setOnButtonClick(holder.imb_stat, position);
+        setOnButtonClick(holder.imb_setting, position);
         return convertView;
     }
 
-    private void setOnButtonClick (ImageButton buttonClick){
+    private void setOnButtonClick (ImageButton buttonClick, final int postition){
         buttonClick.setFocusable(false);
         buttonClick.setFocusableInTouchMode(false);
         buttonClick.setOnClickListener(new View.OnClickListener() {
@@ -73,8 +75,11 @@ public class TasksAdapter extends BaseAdapter{
 
             public void onClick(View v) {
                 switch (v.getId()){
-                    case R.id.imb_startCD:
-                        Toast.makeText(mContext, "Start", Toast.LENGTH_SHORT).show();
+                    case R.id.imb_start:
+                        Intent intent = new Intent(mContext, MainActivity.class);
+                        intent.putExtra("position", postition);
+                        mContext.startActivity(intent);
+                        Toast.makeText(mContext, "Start "+ getItem(postition).getTitle(), Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.imb_stat:
                         Toast.makeText(mContext, "Statistic", Toast.LENGTH_SHORT).show();

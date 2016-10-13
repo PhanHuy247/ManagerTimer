@@ -1,5 +1,7 @@
 package com.example.huy.managertimer;
 
+import java.util.Date;
+
 /**
  * Created by Laptop88 on 10/10/2016.
  */
@@ -7,16 +9,16 @@ package com.example.huy.managertimer;
 public class Task {
     private int color;
     private String title;
-    private int timeGoal;
+    private Date beginDate;
     private int numOfSess;
     private int WTime;
     private double aveWTime;
     private double ratio;
 
-    public Task(int color, String title, int timeGoal) {
+    public Task(int color, String title) {
         this.color = color;
         this.title = title;
-        this.timeGoal = timeGoal;
+//        this.beginDate = beginDate;
     }
 
     public int getColor() {
@@ -35,12 +37,12 @@ public class Task {
         this.title = title;
     }
 
-    public int getTimeGoal() {
-        return timeGoal;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
-    public void setTimeGoal(int timeGoal) {
-        this.timeGoal = timeGoal;
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
     }
 
     public int getNumOfSess() {

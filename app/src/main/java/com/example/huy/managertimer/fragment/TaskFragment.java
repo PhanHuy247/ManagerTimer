@@ -18,12 +18,12 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class TaskFragment extends Fragment {
-    ArrayList<Task> tasks = new ArrayList<>();
+    public static ArrayList<Task> tasks = new ArrayList<>();
     ListView lv_tasks;
     public TaskFragment() {
         // Required empty public constructor
         for (int i = 0; i < 20; i++) {
-            tasks.add(new Task(i, "Task "+(i+1), i*2));
+            tasks.add(new Task(i, "Task "+(i+1)));
         }
 
     }
