@@ -1,6 +1,7 @@
 package com.example.huy.managertimer.activity;
 
-import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.design.widget.TabLayout;
@@ -15,9 +16,9 @@ import android.view.MenuItem;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.adapter.ViewPageAdapter;
 import com.example.huy.managertimer.fragment.ClockFragment;
-import com.example.huy.managertimer.fragment.SettingDialogFragment;
 import com.example.huy.managertimer.fragment.StatisticsFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
+import com.example.huy.managertimer.services.CountdownService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         resources = getResources();
+
         tbMain = (Toolbar) findViewById(R.id.tbMain);
         setSupportActionBar(tbMain);
 
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         tlMain = (TabLayout) findViewById(R.id.tlMain);
         tlMain.setupWithViewPager(vpMain);
         setupTabIcons();
+
 
     }
 
@@ -51,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUpViewPage() {
         ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ClockFragment(),resources.getString(R.string.Time));
-        adapter.addFragment(new TaskFragment(),resources.getString(R.string.Task));
-        adapter.addFragment(new StatisticsFragment(),resources.getString(R.string.Chart));
+        adapter.addFragment(new ClockFragment(), resources.getString(R.string.Time));
+        adapter.addFragment(new TaskFragment(), resources.getString(R.string.Task));
+        adapter.addFragment(new StatisticsFragment(), resources.getString(R.string.Chart));
         vpMain.setAdapter(adapter);
     }
 
@@ -70,12 +73,30 @@ public class MainActivity extends AppCompatActivity {
             case R.id.setting:
                 Intent intent = new Intent(this, SettingActivity.class);
                 startActivity(intent);
-//                FragmentManager fm = getFragmentManager();
-//                SettingDialogFragment dialogFragment = new SettingDialogFragment ();
-//                dialogFragment.show(fm, "Sample Fragment");
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!ClockFragment.isOnSess){
+            if (ClockFragment.mService!=null){
+                ClockFragment.mService.stopSelf();
+            }
+
+        }
+        super.onDestroy();
+    }
+    private class mBroadcastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(CountdownService.ACTION_STOP)){
+
+            }
         }
     }
 }

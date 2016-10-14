@@ -12,6 +12,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.fragment.ClockFragment;
 
 public class SettingActivity extends AppCompatActivity{
     TextView tv_wTime, tv_bTime, tv_longBTime;
@@ -238,6 +239,20 @@ public class SettingActivity extends AppCompatActivity{
         lBTime = sb_longBTime.getProgress();
         nOSess = sb_SessBefLongBTime.getProgress();
         vol = sb_volume.getProgress();
+
+        if (ClockFragment.mService==null){
+            ClockFragment.tv_countdown.setText(wTime+" : 00");
+        }
+        else {
+            if (!ClockFragment.isOnSess){
+                if (ClockFragment.isWorking){
+                    ClockFragment.tv_countdown.setText(bTime+" : 00");
+                }
+                else {
+                    ClockFragment.tv_countdown.setText(wTime+" : 00");
+                }
+            }
+        }
         SharedPreferences preferences = getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(S_WTIME, wTime);

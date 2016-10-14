@@ -10,7 +10,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
-import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.services.CountdownService;
 import com.google.gson.Gson;
 
@@ -115,6 +113,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         broadcastReceiver = new MyBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(mService.ACTION_FINISH);
+        filter.addAction(mService.ACTION_STOP);
         getActivity().registerReceiver(broadcastReceiver, filter);
     }
 
@@ -221,23 +220,28 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         silenceMode = settingPrefs.getBoolean(S_SILENCE_MODE, silenceMode);
         wifiMode = settingPrefs.getBoolean(S_WIFI_MODE, wifiMode);
 
-        if (!isBound){
-            SharedPreferences tasksPrefs = getActivity().getSharedPreferences(getString(R.string.tasks_infos), Context.MODE_PRIVATE);
-            Gson gson = new Gson();
-            for (Task task:TaskFragment.tasks){
-                String json = tasksPrefs.getString(task.getTitle(), "");
-                Task tmp = gson.fromJson(json, Task.class);
-                if (tmp!=null){
-                    task = tmp;
-                }
-            }
-            String json = tasksPrefs.getString(getString(R.string.defaultTask), "");
-            Task tmp = gson.fromJson(json, Task.class);
-            if (tmp!=null){
-                TaskFragment.defaultTask = tmp;
-            }
-            Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
-        }
+//        if (!isBound){
+//            SharedPreferences tasksPrefs = getActivity().getSharedPreferences(getString(R.string.tasks_infos), Context.MODE_PRIVATE);
+//            Gson gson = new Gson();
+//            for (int i = 0; i < TaskFragment.tasks.size(); i++) {
+//
+//                String json = tasksPrefs.getString(TaskFragment.tasks.get(i).getTitle(), "");
+//                Task tmp = gson.fromJson(json, Task.class);
+//                if (tmp!=null){
+//                    TaskFragment.tasks.set(i, tmp);
+//                }
+//
+//            }
+//            String json = tasksPrefs.getString(getString(R.string.defaultTask), "");
+//            Task tmp = gson.fromJson(json, Task.class);
+//            if (tmp!=null){
+//                TaskFragment.defaultTask = tmp;
+//            }
+//            Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
+//            for (int i = 0; i < TaskFragment.tasks.size(); i++) {
+//                Log.d("getData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
+//            }
+//        }
 
 
     }
@@ -305,19 +309,25 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 setUpService();
                 break;
             case R.id.imb_stop:
-                isCounting = false;
-                isOnSess = false;
-                tv_countdown.setText(""+wTime+" : 00");
-                imb_isWorking.setVisibility(View.GONE);
-                imb_isRelaxing.setVisibility(View.GONE);
-                imb_start.setVisibility(View.VISIBLE);
-                imb_break.setVisibility(View.VISIBLE);
-                imb_skipNext.setVisibility(View.GONE);
-                imb_pause.setVisibility(View.GONE);
-                imb_stop.setVisibility(View.GONE);
-                mService.mCountdownTimer.cancel();
+                stopAction();
+                mService.stopForeground(true);
                 break;
         }
+    }
+
+    private void stopAction() {
+        isCounting = false;
+        isOnSess = false;
+        tv_countdown.setText(""+wTime+" : 00");
+        imb_isWorking.setVisibility(View.GONE);
+        imb_isRelaxing.setVisibility(View.GONE);
+        imb_start.setVisibility(View.VISIBLE);
+        imb_break.setVisibility(View.VISIBLE);
+        imb_skipNext.setVisibility(View.GONE);
+        imb_pause.setVisibility(View.GONE);
+        imb_stop.setVisibility(View.GONE);
+        mService.mCountdownTimer.cancel();
+
     }
 
     private void setUpService() {
@@ -336,10 +346,10 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 mService = binder.getService(); // lấy đối tượng MyService
             }
         };
-        startNewMusicService();
+        startNewCountdownService();
 
     }
-    private void startNewMusicService (){
+    private void startNewCountdownService(){
         Intent intent = new Intent(getActivity(), CountdownService.class);
         int a;
         if (isWorking){
@@ -389,6 +399,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                     imb_break.setVisibility(View.GONE);
 
                 }
+            }
+            else if (intent.getAction().equals(mService.ACTION_STOP)){
+                stopAction();
             }
         }
     }

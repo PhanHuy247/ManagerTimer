@@ -1,7 +1,9 @@
 package com.example.huy.managertimer.fragment;
 
 
+import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +23,8 @@ public class TaskFragment extends Fragment {
     public static ArrayList<Task> tasks = new ArrayList<>();
     public static Task defaultTask = new Task(0, "");
     ListView lv_tasks;
+    private FloatingActionButton fabMain;
     public TaskFragment() {
-        // Required empty public constructor
-        for (int i = 0; i < 20; i++) {
-            tasks.add(new Task(i, "Task "+(i+1)));
-        }
 
     }
 
@@ -41,11 +40,21 @@ public class TaskFragment extends Fragment {
 
     private void initView(View view) {
         lv_tasks = (ListView) view.findViewById(R.id.lv_tasks);
+        fabMain = (FloatingActionButton) view.findViewById(R.id.fabMain);
+        fabMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fm = getActivity().getFragmentManager();
+                AddingTaskDialogFragment dialogFragment = new AddingTaskDialogFragment();
+                dialogFragment.show(fm, "Sample Fragment");
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         TasksAdapter taskAdapter = new TasksAdapter(tasks, getActivity());
         lv_tasks.setAdapter(taskAdapter);
     }

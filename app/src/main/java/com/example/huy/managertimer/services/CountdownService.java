@@ -215,6 +215,9 @@ public class CountdownService extends Service {
         prefsEditor.putString(getString(R.string.defaultTask), json);
         prefsEditor.commit();
         Log.d("saveData", TaskFragment.defaultTask.getWTime()+"");
+        for (int i = 0; i < TaskFragment.tasks.size(); i++) {
+            Log.d("saveData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
+        }
         super.onDestroy();
     }
     private class NotiReceiver extends BroadcastReceiver {
@@ -232,6 +235,11 @@ public class CountdownService extends Service {
             else if (intent.getAction().equals(ACTION_STOP)){
                 mCountdownTimer.cancel();
                 stopForeground(true);
+                ClockFragment.isOnSess = false;
+                ClockFragment.isWorking = false;
+                ClockFragment.isCounting = false;
+                ClockFragment.hasNext = false;
+                stopSelf();
             }
 
         }
