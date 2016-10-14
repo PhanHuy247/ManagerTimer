@@ -3,6 +3,7 @@ package com.example.huy.managertimer.activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -21,7 +22,7 @@ import com.example.huy.managertimer.fragment.TaskFragment;
 import com.example.huy.managertimer.services.CountdownService;
 
 public class MainActivity extends AppCompatActivity {
-
+    private MyBroadcastReceiver myBroadcastReceiver;
     private TabLayout tlMain;
     private ViewPager vpMain;
     private Toolbar tbMain;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        setupBroadcast();
         resources = getResources();
 
         tbMain = (Toolbar) findViewById(R.id.tbMain);
@@ -44,6 +45,13 @@ public class MainActivity extends AppCompatActivity {
         setupTabIcons();
 
 
+    }
+
+    private void setupBroadcast() {
+        myBroadcastReceiver = new MyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CountdownService.ACTION_STOP);
+        registerReceiver(myBroadcastReceiver, filter);
     }
 
     private void setupTabIcons() {
@@ -81,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         if (!ClockFragment.isOnSess){
             if (ClockFragment.mService!=null){
@@ -90,12 +103,12 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onDestroy();
     }
-    private class mBroadcastReceiver extends BroadcastReceiver{
+    private class MyBroadcastReceiver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(CountdownService.ACTION_STOP)){
-
+                finish();
             }
         }
     }

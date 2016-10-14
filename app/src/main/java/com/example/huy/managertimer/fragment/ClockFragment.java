@@ -23,6 +23,9 @@ import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.services.CountdownService;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME_MODE;
@@ -98,15 +101,18 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         isOnSess = true;
         isWorking = true;
         isCounting = true;
+        refreshService();
+
+
+    }
+
+    private void refreshService() {
         if (mService!=null){
             mService.mCountdownTimer.cancel();
-            mService.setUpCountdownTimer(wTime*60000);
-        }
-        else {
-            setUpService();
-        }
+            mService.stopSelf();
 
-
+        }
+        setUpService();
     }
 
     private void setBroadcastReceiver() {
@@ -220,28 +226,31 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         silenceMode = settingPrefs.getBoolean(S_SILENCE_MODE, silenceMode);
         wifiMode = settingPrefs.getBoolean(S_WIFI_MODE, wifiMode);
 
-//        if (!isBound){
-//            SharedPreferences tasksPrefs = getActivity().getSharedPreferences(getString(R.string.tasks_infos), Context.MODE_PRIVATE);
-//            Gson gson = new Gson();
-//            for (int i = 0; i < TaskFragment.tasks.size(); i++) {
-//
-//                String json = tasksPrefs.getString(TaskFragment.tasks.get(i).getTitle(), "");
-//                Task tmp = gson.fromJson(json, Task.class);
-//                if (tmp!=null){
-//                    TaskFragment.tasks.set(i, tmp);
-//                }
-//
-//            }
-//            String json = tasksPrefs.getString(getString(R.string.defaultTask), "");
-//            Task tmp = gson.fromJson(json, Task.class);
-//            if (tmp!=null){
-//                TaskFragment.defaultTask = tmp;
-//            }
-//            Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
-//            for (int i = 0; i < TaskFragment.tasks.size(); i++) {
-//                Log.d("getData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
-//            }
-//        }
+        if (!isBound){
+            SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.setting_pref), MODE_PRIVATE);
+            int tasksSize = preferences.getInt("noTask", 0);
+            ArrayList<Task> tasks = new ArrayList<>();
+            SharedPreferences tasksPrefs = getActivity().getSharedPreferences(getString(R.string.tasks_infos), Context.MODE_PRIVATE);
+            Gson gson = new Gson();
+            for (int i = 0; i < tasksSize; i++) {
+                String json = tasksPrefs.getString("Task"+i, "");
+                Task tmp = gson.fromJson(json, Task.class);
+                if (tmp!=null){
+                    tasks.add(tmp);
+                }
+
+            }
+            TaskFragment.tasks = tasks;
+            String json = tasksPrefs.getString(getString(R.string.defaultTask), "");
+            Task tmp = gson.fromJson(json, Task.class);
+            if (tmp!=null){
+                TaskFragment.defaultTask = tmp;
+            }
+            Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
+            for (int i = 0; i < TaskFragment.tasks.size(); i++) {
+                Log.d("getData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
+            }
+        }
 
 
     }
@@ -306,11 +315,12 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 imb_pause.setVisibility(View.VISIBLE);
                 imb_stop.setVisibility(View.VISIBLE);
                 mService.mCountdownTimer.cancel();
+                mService.stopSelf();
                 setUpService();
                 break;
             case R.id.imb_stop:
                 stopAction();
-                mService.stopForeground(true);
+
                 break;
         }
     }
@@ -318,6 +328,8 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     private void stopAction() {
         isCounting = false;
         isOnSess = false;
+        isWorking = false;
+        hasNext = false;
         tv_countdown.setText(""+wTime+" : 00");
         imb_isWorking.setVisibility(View.GONE);
         imb_isRelaxing.setVisibility(View.GONE);
@@ -327,6 +339,8 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_pause.setVisibility(View.GONE);
         imb_stop.setVisibility(View.GONE);
         mService.mCountdownTimer.cancel();
+        mService.stopForeground(true);
+        mService.stopSelf();
 
     }
 
@@ -362,18 +376,14 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             imb_isRelaxing.setVisibility(View.VISIBLE);
             imb_isWorking.setVisibility(View.GONE);
         }
+        intent.putExtra("timeInMin", a);
+        getActivity().startService(intent);
         isOnSess = true;
         if (isBound==false){
-            intent.putExtra("timeInMin", a);
-            getActivity().startService(intent);
             getActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE);
             isBound = true;
         }
-        else {
 
-            mService.setUpCountdownTimer(a*60000);
-
-        }
     }
     private class MyBroadcastReceiver extends BroadcastReceiver{
 

@@ -204,12 +204,16 @@ public class CountdownService extends Service {
     @Override
     public void onDestroy() {
         Toast.makeText(getApplicationContext(), "Service was terminated!", Toast.LENGTH_SHORT).show();
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.setting_pref), MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("noTask", TaskFragment.tasks.size());
+        editor.commit();
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.tasks_infos), MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
         Gson gson = new Gson();
-        for (Task task:TaskFragment.tasks){
-            String json = gson.toJson(task); // myObject - instance of MyObject
-            prefsEditor.putString(task.getTitle(), json);
+        for (int i = 0; i < TaskFragment.tasks.size(); i++) {
+            String json = gson.toJson(TaskFragment.tasks.get(i)); // myObject - instance of MyObject
+            prefsEditor.putString("Task"+i, json);
         }
         String json = gson.toJson(TaskFragment.defaultTask);
         prefsEditor.putString(getString(R.string.defaultTask), json);
