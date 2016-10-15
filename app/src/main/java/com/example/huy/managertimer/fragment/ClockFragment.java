@@ -25,7 +25,10 @@ import com.example.huy.managertimer.activity.MainActivity;
 import com.example.huy.managertimer.services.CountdownService;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
@@ -243,7 +246,9 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             case R.id.imb_startCD:
                 isCounting = true;
                 isWorking = true;
-
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                Date date = new Date();
+                System.out.println(dateFormat.format(date));
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);

@@ -53,7 +53,7 @@ public class TasksAdapter extends BaseAdapter{
             holder.v_color =  convertView.findViewById(R.id.v_color);
             holder.tv_title = (TextView)convertView.findViewById(R.id.tv_title);
             holder.imb_start = (ImageButton) convertView.findViewById(R.id.imb_start);
-            holder.imb_stat = (ImageButton) convertView.findViewById(R.id.imb_stat);
+//            holder.imb_stat = (ImageButton) convertView.findViewById(R.id.imb_stat);
             holder.imb_setting = (ImageButton) convertView.findViewById(R.id.imb_setting);
             convertView.setTag(holder);
         }
@@ -62,7 +62,7 @@ public class TasksAdapter extends BaseAdapter{
         holder.v_color.setBackgroundColor(mContext.getResources().getColor(R.color.importanItem));
         holder.tv_title.setText(getItem(position).getTitle());
         setOnButtonClick(holder.imb_start, position);
-        setOnButtonClick(holder.imb_stat, position);
+//        setOnButtonClick(holder.imb_stat, position);
         setOnButtonClick(holder.imb_setting, position);
         return convertView;
     }
@@ -81,9 +81,9 @@ public class TasksAdapter extends BaseAdapter{
                         mContext.startActivity(intent);
                         Toast.makeText(mContext, "Start "+ getItem(postition).getTitle(), Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.imb_stat:
-                        Toast.makeText(mContext, "Statistic", Toast.LENGTH_SHORT).show();
-                        break;
+//                    case R.id.imb_stat:
+//                        Toast.makeText(mContext, "Statistic", Toast.LENGTH_SHORT).show();
+//                        break;
                     case R.id.imb_setting:
                         Toast.makeText(mContext, "Setting", Toast.LENGTH_SHORT).show();
                         break;
@@ -95,7 +95,7 @@ public class TasksAdapter extends BaseAdapter{
         public View v_color;
         public TextView tv_title;
         public ImageButton imb_start;
-        public ImageButton imb_stat;
+//        public ImageButton imb_stat;
         public ImageButton imb_setting;
     }
 }

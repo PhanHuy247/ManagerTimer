@@ -17,5 +17,7 @@
     <string name="defaultTask">defaultTask</string>
     <string name="task_title_hint">Title</string>
 
+    <string name="TASK_POS">task_pos</string>
+
 
 </resources>

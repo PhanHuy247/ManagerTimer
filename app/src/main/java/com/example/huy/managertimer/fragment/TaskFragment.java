@@ -2,16 +2,19 @@ package com.example.huy.managertimer.fragment;
 
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
+import com.example.huy.managertimer.activity.TaskDetailActivity;
 import com.example.huy.managertimer.adapter.TasksAdapter;
 
 import java.util.ArrayList;
@@ -40,6 +43,14 @@ public class TaskFragment extends Fragment {
 
     private void initView(View view) {
         lv_tasks = (ListView) view.findViewById(R.id.lv_tasks);
+        lv_tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), TaskDetailActivity.class);
+                intent.putExtra(getString(R.string.TASK_POS), i);
+                startActivity(intent);
+            }
+        });
         fabMain = (FloatingActionButton) view.findViewById(R.id.fabMain);
         fabMain.setOnClickListener(new View.OnClickListener() {
             @Override

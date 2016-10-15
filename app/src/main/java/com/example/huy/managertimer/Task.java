@@ -9,7 +9,7 @@ import java.util.Date;
 public class Task {
     private int color;
     private String title;
-    private Date beginDate;
+    private String beginDate;
     private int numOfSess;
     private int WTime;
     private double aveWTime;
@@ -37,11 +37,11 @@ public class Task {
         this.title = title;
     }
 
-    public Date getBeginDate() {
+    public String getBeginDate() {
         return beginDate;
     }
 
-    public void setBeginDate(Date beginDate) {
+    public void setBeginDate(String beginDate) {
         this.beginDate = beginDate;
     }
 
