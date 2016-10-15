@@ -8,6 +8,8 @@ import com.example.huy.managertimer.activity.MainActivity;
 import com.example.huy.managertimer.fragment.TaskFragment;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -35,5 +37,31 @@ public class HelperClass {
             Log.d("saveData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
         }
     }
+    public static void getTasks (Context mContext){
+        SharedPreferences preferences = mContext.getSharedPreferences(mContext.getString(R.string.setting_pref), MODE_PRIVATE);
+        int tasksSize = preferences.getInt("noTask", 0);
+        ArrayList<Task> tasks = new ArrayList<>();
+        SharedPreferences tasksPrefs = mContext.getSharedPreferences(mContext.getString(R.string.tasks_infos), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        for (int i = 0; i < tasksSize; i++) {
+            String json = tasksPrefs.getString("Task"+i, "");
+            Task tmp = gson.fromJson(json, Task.class);
+            if (tmp!=null){
+                tasks.add(tmp);
+            }
+
+        }
+        TaskFragment.tasks = tasks;
+        String json = tasksPrefs.getString(mContext.getString(R.string.defaultTask), "");
+        Task tmp = gson.fromJson(json, Task.class);
+        if (tmp!=null){
+            TaskFragment.defaultTask = tmp;
+        }
+        Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
+        for (int i = 0; i < TaskFragment.tasks.size(); i++) {
+            Log.d("getData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
+        }
+    }
+
 
 }

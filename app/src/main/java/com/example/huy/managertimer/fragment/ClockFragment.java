@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
+import com.example.huy.managertimer.activity.MainActivity;
 import com.example.huy.managertimer.services.CountdownService;
 import com.google.gson.Gson;
 
@@ -228,29 +229,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         wifiMode = settingPrefs.getBoolean(S_WIFI_MODE, wifiMode);
 
         if (!isBound){
-            SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.setting_pref), MODE_PRIVATE);
-            int tasksSize = preferences.getInt("noTask", 0);
-            ArrayList<Task> tasks = new ArrayList<>();
-            SharedPreferences tasksPrefs = getActivity().getSharedPreferences(getString(R.string.tasks_infos), Context.MODE_PRIVATE);
-            Gson gson = new Gson();
-            for (int i = 0; i < tasksSize; i++) {
-                String json = tasksPrefs.getString("Task"+i, "");
-                Task tmp = gson.fromJson(json, Task.class);
-                if (tmp!=null){
-                    tasks.add(tmp);
-                }
-
-            }
-            TaskFragment.tasks = tasks;
-            String json = tasksPrefs.getString(getString(R.string.defaultTask), "");
-            Task tmp = gson.fromJson(json, Task.class);
-            if (tmp!=null){
-                TaskFragment.defaultTask = tmp;
-            }
-            Log.d("getData", TaskFragment.defaultTask.getWTime()+"");
-            for (int i = 0; i < TaskFragment.tasks.size(); i++) {
-                Log.d("getData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
-            }
+           HelperClass.getTasks(getActivity());
         }
 
 
