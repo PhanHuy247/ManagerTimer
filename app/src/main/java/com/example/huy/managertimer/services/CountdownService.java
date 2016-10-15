@@ -203,25 +203,7 @@ public class CountdownService extends Service {
     }
     @Override
     public void onDestroy() {
-        Toast.makeText(getApplicationContext(), "Service was terminated!", Toast.LENGTH_SHORT).show();
-        SharedPreferences preferences = getSharedPreferences(getString(R.string.setting_pref), MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("noTask", TaskFragment.tasks.size());
-        editor.commit();
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.tasks_infos), MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        for (int i = 0; i < TaskFragment.tasks.size(); i++) {
-            String json = gson.toJson(TaskFragment.tasks.get(i)); // myObject - instance of MyObject
-            prefsEditor.putString("Task"+i, json);
-        }
-        String json = gson.toJson(TaskFragment.defaultTask);
-        prefsEditor.putString(getString(R.string.defaultTask), json);
-        prefsEditor.commit();
-        Log.d("saveData", TaskFragment.defaultTask.getWTime()+"");
-        for (int i = 0; i < TaskFragment.tasks.size(); i++) {
-            Log.d("saveData"+(i+1), TaskFragment.tasks.get(i).getWTime()+"");
-        }
+
         super.onDestroy();
     }
     private class NotiReceiver extends BroadcastReceiver {

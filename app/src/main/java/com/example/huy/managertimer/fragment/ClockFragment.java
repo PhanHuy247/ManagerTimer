@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.services.CountdownService;
@@ -341,6 +342,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         mService.mCountdownTimer.cancel();
         mService.stopForeground(true);
         mService.stopSelf();
+        HelperClass.saveTasks(getActivity());
 
     }
 

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.adapter.ViewPageAdapter;
 import com.example.huy.managertimer.fragment.ClockFragment;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        HelperClass.saveTasks(this);
         super.onStop();
     }
 
