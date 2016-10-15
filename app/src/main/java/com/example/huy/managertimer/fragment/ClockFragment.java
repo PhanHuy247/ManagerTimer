@@ -60,9 +60,8 @@ import static com.example.huy.managertimer.activity.SettingActivity.wifiMode;
 public class ClockFragment extends Fragment implements View.OnClickListener{
     public static CountdownService mService = null;
     public static boolean isWorking;
-    public static final Task DEF_TASK = new Task(0, "");
+
 //    public static boolean isRelaxing;
-    public static  Task curTask = DEF_TASK;
     public static TextView tv_countdown;
     ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
     ImageButton imb_isWorking, imb_isRelaxing;
@@ -250,9 +249,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             case R.id.imb_startCD:
                 isCounting = true;
                 isWorking = true;
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                Date date = new Date();
-                System.out.println(dateFormat.format(date));
+
                 imb_start.setVisibility(View.GONE);
                 imb_break.setVisibility(View.GONE);
                 imb_skipNext.setVisibility(View.VISIBLE);

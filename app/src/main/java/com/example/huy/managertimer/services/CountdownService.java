@@ -203,7 +203,7 @@ public class CountdownService extends Service {
     }
     @Override
     public void onDestroy() {
-
+        unregisterReceiver(receiver);
         super.onDestroy();
     }
     private class NotiReceiver extends BroadcastReceiver {

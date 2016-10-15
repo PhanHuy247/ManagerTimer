@@ -12,13 +12,13 @@ public class Task {
     private String beginDate;
     private int numOfSess;
     private int WTime;
-    private double aveWTime;
+    private int aveWTime;
     private double ratio;
 
-    public Task(int color, String title) {
+    public Task(int color, String title, String beginDate) {
         this.color = color;
         this.title = title;
-//        this.beginDate = beginDate;
+        this.beginDate = beginDate;
     }
 
     public int getColor() {
@@ -61,11 +61,11 @@ public class Task {
         this.WTime = WTime;
     }
 
-    public double getAveWTime() {
+    public int getAveWTime() {
         return aveWTime;
     }
 
-    public void setAveWTime(double aveWTime) {
+    public void setAveWTime(int aveWTime) {
         this.aveWTime = aveWTime;
     }
 

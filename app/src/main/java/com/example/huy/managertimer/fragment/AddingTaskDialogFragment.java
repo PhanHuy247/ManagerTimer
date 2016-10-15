@@ -9,8 +9,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Laptop88 on 10/11/2016.
@@ -44,7 +49,11 @@ public class AddingTaskDialogFragment extends DialogFragment implements View.OnC
                 break;
             case R.id.imb_save:
                 if (!edt_title.getText().equals("")){
-                    TaskFragment.tasks.add(new Task(0, edt_title.getText().toString()));
+                    DateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat));
+                    Date date = new Date();
+                    Task nTask = new Task(0, edt_title.getText().toString(), dateFormat.format(date));
+                    TaskFragment.tasks.add(nTask);
+                    HelperClass.saveTasks(getActivity());
                     dismiss();
                 }
                 break;

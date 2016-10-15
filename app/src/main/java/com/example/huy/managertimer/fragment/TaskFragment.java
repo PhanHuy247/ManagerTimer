@@ -17,6 +17,7 @@ import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.activity.TaskDetailActivity;
 import com.example.huy.managertimer.adapter.TasksAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -24,7 +25,7 @@ import java.util.ArrayList;
  */
 public class TaskFragment extends Fragment {
     public static ArrayList<Task> tasks = new ArrayList<>();
-    public static Task defaultTask = new Task(0, "");
+    public static Task defaultTask = new Task(0, "", "whatever");
     ListView lv_tasks;
     private FloatingActionButton fabMain;
     public TaskFragment() {
@@ -68,5 +69,10 @@ public class TaskFragment extends Fragment {
 
         TasksAdapter taskAdapter = new TasksAdapter(tasks, getActivity());
         lv_tasks.setAdapter(taskAdapter);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 }

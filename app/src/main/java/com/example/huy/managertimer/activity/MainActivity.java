@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         HelperClass.saveTasks(this);
+
         super.onStop();
     }
 
