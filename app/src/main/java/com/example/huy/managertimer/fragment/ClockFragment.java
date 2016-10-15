@@ -127,6 +127,8 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         IntentFilter filter = new IntentFilter();
         filter.addAction(mService.ACTION_FINISH);
         filter.addAction(mService.ACTION_STOP);
+        filter.addAction(mService.ACTION_NEXT);
+        filter.addAction(mService.ACTION_PAUSE);
         getActivity().registerReceiver(broadcastReceiver, filter);
     }
 
@@ -247,67 +249,83 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.imb_startCD:
-                isCounting = true;
-                isWorking = true;
-
-                imb_start.setVisibility(View.GONE);
-                imb_break.setVisibility(View.GONE);
-                imb_skipNext.setVisibility(View.VISIBLE);
-                imb_pause.setVisibility(View.VISIBLE);
-                imb_stop.setVisibility(View.VISIBLE);
-                setUpService();
+                startAction();
                 break;
             case R.id.imb_break:
-                isCounting = true;
-                isWorking = false;
-                imb_start.setVisibility(View.GONE);
-                imb_break.setVisibility(View.GONE);
-                imb_skipNext.setVisibility(View.VISIBLE);
-                imb_pause.setVisibility(View.VISIBLE);
-                imb_stop.setVisibility(View.VISIBLE);
-                setUpService();
+                breakAction();
                 break;
             case R.id.imb_pause:
-                if (isCounting){
-                    imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
-                    isCounting = false;
-
-                    mService.mCountdownTimer.cancel();
-                }
-                else {
-                    isCounting = true;
-                    mService.setUpCountdownTimer(mService.millisLeft);
-                }
+                pauseAction();
                 break;
             case R.id.imb_skip:
-                if (isOnSess){
-                    if (isWorking){
-                        isWorking = false;
-                    }
-                    else {
-                        isWorking = true;
-                    }
-                }
-                else {
-                    Log.d("khuong", isWorking+"");
-                }
-
-
-                isCounting = true;
-
-                imb_start.setVisibility(View.GONE);
-                imb_break.setVisibility(View.GONE);
-                imb_skipNext.setVisibility(View.VISIBLE);
-                imb_pause.setVisibility(View.VISIBLE);
-                imb_stop.setVisibility(View.VISIBLE);
-                mService.mCountdownTimer.cancel();
-                mService.stopSelf();
-                setUpService();
+                skipAction();
                 break;
             case R.id.imb_stop:
                 stopAction();
                 break;
         }
+    }
+
+    private void breakAction() {
+        isCounting = true;
+        isWorking = false;
+        imb_start.setVisibility(View.GONE);
+        imb_break.setVisibility(View.GONE);
+        imb_skipNext.setVisibility(View.VISIBLE);
+        imb_pause.setVisibility(View.VISIBLE);
+        imb_stop.setVisibility(View.VISIBLE);
+        setUpService();
+    }
+
+    private void startAction() {
+        isCounting = true;
+        isWorking = true;
+
+        imb_start.setVisibility(View.GONE);
+        imb_break.setVisibility(View.GONE);
+        imb_skipNext.setVisibility(View.VISIBLE);
+        imb_pause.setVisibility(View.VISIBLE);
+        imb_stop.setVisibility(View.VISIBLE);
+        setUpService();
+    }
+
+    private void pauseAction() {
+        if (isCounting){
+            imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+            isCounting = false;
+
+            mService.mCountdownTimer.cancel();
+        }
+        else {
+            isCounting = true;
+            mService.setUpCountdownTimer(mService.millisLeft);
+        }
+    }
+
+    private void skipAction() {
+        if (isOnSess){
+            if (isWorking){
+                isWorking = false;
+            }
+            else {
+                isWorking = true;
+            }
+        }
+        else {
+            Log.d("khuong", isWorking+"");
+        }
+
+
+        isCounting = true;
+
+        imb_start.setVisibility(View.GONE);
+        imb_break.setVisibility(View.GONE);
+        imb_skipNext.setVisibility(View.VISIBLE);
+        imb_pause.setVisibility(View.VISIBLE);
+        imb_stop.setVisibility(View.VISIBLE);
+        mService.mCountdownTimer.cancel();
+        mService.stopSelf();
+        setUpService();
     }
 
     private void stopAction() {
@@ -376,7 +394,8 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(mService.ACTION_FINISH)){
-
+                hasNext = true;
+                isOnSess = false;
                 imb_isWorking.setVisibility(View.GONE);
                 imb_isRelaxing.setVisibility(View.GONE);
                 if (isWorking){
@@ -395,10 +414,30 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                     imb_break.setVisibility(View.GONE);
 
                 }
+                mService.setupNotification();
             }
             else if (intent.getAction().equals(mService.ACTION_STOP)){
                 stopAction();
+                mService.setupNotification();
             }
+            else if (intent.getAction().equals(mService.ACTION_NEXT)){
+                skipAction();
+                mService.setupNotification();
+            }
+            else if (intent.getAction().equals(mService.ACTION_PAUSE)){
+                if (isOnSess){
+                    pauseAction();
+                }
+                else {
+                    if (isWorking){
+                        breakAction();
+                    }else {
+                        startAction();
+                    }
+                }
+                mService.setupNotification();
+            }
+
         }
     }
 

@@ -2,6 +2,7 @@ package com.example.huy.managertimer.services;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -16,9 +17,12 @@ import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.activity.MainActivity;
@@ -27,6 +31,13 @@ import com.example.huy.managertimer.fragment.ClockFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
+import static com.example.huy.managertimer.fragment.ClockFragment.hasNext;
+import static com.example.huy.managertimer.fragment.ClockFragment.isCounting;
+import static com.example.huy.managertimer.fragment.ClockFragment.isOnSess;
+import static com.example.huy.managertimer.fragment.ClockFragment.isWorking;
+
 public class CountdownService extends Service {
     public static final String ACTION_PLAY = "action_play";
     public static final String ACTION_PAUSE = "action_pause";
@@ -34,7 +45,7 @@ public class CountdownService extends Service {
     public static final String ACTION_PREVIOUS = "action_previous";
     public static final String ACTION_STOP = "action_stop";
     public static final int NOTIFY_ID = 1912;
-    private NotiReceiver receiver;
+//    private NotiReceiver receiver;
 
     public CountdownService() {
     }
@@ -44,24 +55,28 @@ public class CountdownService extends Service {
     private Bitmap artwork;
     Intent resultIntent;
     PendingIntent pendInt;
+    int min, sec;
+    String title;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        setBroadcastReceiver();
+//        setBroadcastReceiver();
         int timeInMin = intent.getIntExtra("timeInMin", 25);
         long timeInMilliSec = timeInMin*60000;
         setUpCountdownTimer(timeInMilliSec);
         return START_NOT_STICKY;
     }
-    private void setBroadcastReceiver() {
-        receiver = new NotiReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_NEXT);
-        filter.addAction(ACTION_PAUSE);
-        filter.addAction(ACTION_PREVIOUS);
-        filter.addAction(ACTION_STOP);
-        registerReceiver(receiver, filter);
-
-    }
+//    private void setBroadcastReceiver() {
+//        receiver = new NotiReceiver();
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(ACTION_NEXT);
+//        filter.addAction(ACTION_PAUSE);
+//        filter.addAction(ACTION_PREVIOUS);
+//        filter.addAction(ACTION_STOP);
+//        registerReceiver(receiver, filter);
+//
+//    }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void setUpCountdownTimer(final long time) {
         artwork = BitmapFactory.decodeResource(getResources(), R.drawable.brain_power);
 
@@ -71,23 +86,29 @@ public class CountdownService extends Service {
         pendInt = PendingIntent.getActivity(getApplicationContext(), 0,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        setupNotification();
+        final Notification.Builder mBuilder = setupNotification();
+
         mCountdownTimer = new CountDownTimer(time, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                int min = (int) (millisUntilFinished/60000);
-                int sec = (int) ((millisUntilFinished%60000)/1000);
+                 min = (int) (millisUntilFinished/60000);
+                 sec = (int) ((millisUntilFinished%60000)/1000);
                 String text = min+" : "+sec;
                 ClockFragment.tv_countdown.setText(text);
                 millisLeft = millisUntilFinished;
                 ClockFragment.imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
                 ClockFragment.curCountdownStr = text;
-
+                mBuilder.setContentText(min+" : "+(sec-1)+" - "+title);
+                Notification not = mBuilder.build();
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.notify(NOTIFY_ID, not);
+//                setupNotification();
             }
 
             public void onFinish() {
 
-                if (ClockFragment.isWorking){
+                if (isWorking){
                     if (ClockFragment.position!=-1){
                         int wTime = TaskFragment.tasks.get(ClockFragment.position).getWTime()+(int) (time/60000);
                         TaskFragment.tasks.get(ClockFragment.position).setWTime(wTime);
@@ -100,77 +121,64 @@ public class CountdownService extends Service {
                     }
 
                 }
-                ClockFragment.hasNext = true;
+
                 Intent intent = new Intent(ACTION_FINISH);
                 sendBroadcast(intent);
-                ClockFragment.isOnSess = false;
+
 
             }
         }.start();
     }
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void setupNotification () {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public Notification.Builder setupNotification () {
         Notification.Builder mBuilder = new Notification.Builder(CountdownService.this);
-        int id;
+        int pos = ClockFragment.position;
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            if (mediaPlayer.isPlaying()){
-//                id = R.drawable.ic_pause_white_36dp;
-//            }
-//            else {
-//                id = R.drawable.ic_play_arrow_white_36dp;
-//            }
-            mBuilder.setContentIntent(pendInt)
-                    .setColor(0x388E3C)
-                    .setLargeIcon(artwork)
-                    .setSmallIcon(R.drawable.brain_power)
-                    .setShowWhen(false)
-                    //                .setContentTitle("New Message")
-                    //                .setContentText("You've received new message.")
-                    //                .setTicker("New Message Alert!")
-                    .setStyle(new Notification.MediaStyle()
-                            // Attach our MediaSession token
-//                            .setMediaSession(mediaSession.getSessionToken())
-                            // Show our playback controls in the compat view
-                            .setShowActionsInCompactView(0, 1, 2))
-//                    .setContentText(songs.get(currentPos).getArtist())
-//                    .setContentTitle(songs.get(currentPos).getTitle())
-                    // Add some playback controls
-                    .setPriority(Notification.PRIORITY_MAX)
-//                    .setTicker("Playing: "+songs.get(currentPos).getTitle()+" - "+ songs.get(currentPos).getArtist())
-                    .setContentIntent(pendInt)
-
-//                    .addAction(R.drawable.ic_skip_previous_white_36dp, "prev", retreivePlaybackAction(3))
-                    .addAction(R.drawable.ic_pause_black_24dp, "pause", retreivePlaybackAction(1))
-                    .addAction(R.drawable.ic_skip_next_black_24dp, "next", retreivePlaybackAction(2))
-                    .addAction(R.drawable.ic_stop_black_24dp, "stop", retreivePlaybackAction(4));
-
+        if (pos==-1){
+            title = "defaultTask";
         }
         else {
-//            if (mediaPlayer.isPlaying()){
-//                id = R.drawable.ic_pause_green_800_36dp;
-//            }
-//            else {
-//                id = R.drawable.ic_play_arrow_green_800_36dp;
-//            }
-            mBuilder.setContentIntent(pendInt)
-//                .setLargeIcon(artwork)
-                    .setSmallIcon(R.drawable.brain_power)
-                    .setShowWhen(false)
-//                    .setSubText("just check")
-//                    .setContentText(songs.get(currentPos).getArtist())
-//                    .setContentTitle(songs.get(currentPos).getTitle())
-                    .setContentIntent(pendInt)
-//                    .setTicker("Playing: "+songs.get(currentPos).getTitle()+" - "+ songs.get(currentPos).getArtist())
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .addAction(R.drawable.ic_pause_black_24dp, "pause", retreivePlaybackAction(1))
-                    .addAction(R.drawable.ic_skip_next_black_24dp, "next", retreivePlaybackAction(2))
-                    .addAction(R.drawable.ic_stop_black_24dp, "stop", retreivePlaybackAction(4));
+            title = TaskFragment.tasks.get(pos).getTitle();
         }
-        Notification not = null;
-        not = mBuilder.build();
+
+        int pauseID;
+        if (isOnSess){
+            if (isCounting){
+                pauseID = R.drawable.ic_pause_black_24dp;
+            }
+            else {
+                pauseID = R.drawable.ic_play_arrow_black_24dp;
+            }
+        }
+        else {
+            if (isWorking){
+                pauseID = R.drawable.ic_airline_seat_flat_black_24dp;
+            }
+            else {
+                pauseID = R.drawable.ic_airline_seat_recline_normal_black_24dp;
+            }
+        }
+
+        mBuilder.setContentIntent(pendInt)
+                .setSmallIcon(R.drawable.ic_timelapse_black_24dp)
+                .setShowWhen(false)
+
+                .setContentText(min+" : "+((sec-1)>0?sec-1:0)+" - "+title)
+                .setContentTitle(getString(R.string.app_name))
+
+                // Add some playback controls
+                .setPriority(Notification.PRIORITY_MAX)
+                .setTicker("Doing "+title)
+                .setContentIntent(pendInt)
+
+//                    .addAction(R.drawable.ic_skip_previous_white_36dp, "prev", retreivePlaybackAction(3))
+                .addAction(pauseID, "pause", retreivePlaybackAction(1))
+                .addAction(R.drawable.ic_skip_next_black_24dp, "next", retreivePlaybackAction(2))
+                .addAction(R.drawable.ic_stop_black_24dp, "stop", retreivePlaybackAction(4));
+
+        Notification not = mBuilder.build();;
         startForeground(NOTIFY_ID, not);
+        return mBuilder;
     }
     private PendingIntent retreivePlaybackAction(int which) {
         Intent action;
@@ -203,33 +211,42 @@ public class CountdownService extends Service {
     }
     @Override
     public void onDestroy() {
-        unregisterReceiver(receiver);
+//        unregisterReceiver(receiver);
         super.onDestroy();
     }
-    private class NotiReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ACTION_NEXT)){
-
-
-            }
-            else if (intent.getAction().equals(ACTION_PAUSE)){
-
-
-
-            }
-            else if (intent.getAction().equals(ACTION_STOP)){
-                mCountdownTimer.cancel();
-                stopForeground(true);
-                ClockFragment.isOnSess = false;
-                ClockFragment.isWorking = false;
-                ClockFragment.isCounting = false;
-                ClockFragment.hasNext = false;
-                stopSelf();
-            }
-
-        }
-    }
+//    private class NotiReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (intent.getAction().equals(ACTION_NEXT)){
+//                setupNotification();
+//
+//
+//            }
+//            else if (intent.getAction().equals(ACTION_PAUSE)){
+//                mCountdownTimer.cancel();
+//                if (isCounting = true){
+//                    isCounting = false;
+//                    setupNotification();
+//                }
+//                else {
+//                    isCounting = true;
+//                    setupNotification();
+//                }
+//
+//            }
+//            else if (intent.getAction().equals(ACTION_STOP)){
+////                mCountdownTimer.cancel();
+////                stopForeground(true);
+////                isOnSess = false;
+////                isWorking = false;
+////                isCounting = false;
+////                hasNext = false;
+////                HelperClass.saveTasks(getApplicationContext());
+////                stopSelf();
+//            }
+//
+//        }
+//    }
 
     @Nullable
     @Override
