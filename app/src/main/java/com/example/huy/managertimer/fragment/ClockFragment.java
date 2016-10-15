@@ -30,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import at.grabner.circleprogress.CircleProgressView;
+
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME;
@@ -65,6 +67,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
     ImageButton imb_isWorking, imb_isRelaxing;
     TextView tv_taskTitle;
+    CircleProgressView countdownClock;
     public static ImageButton imb_pause;
     public static boolean isCounting;
     public static boolean isOnSess;
@@ -146,6 +149,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_isWorking = (ImageButton) view.findViewById(R.id.imb_isWorking);
         imb_isRelaxing = (ImageButton) view.findViewById(R.id.imb_isRelaxing);
         tv_taskTitle = (TextView) view.findViewById(R.id.tv_taskTitle);
+        countdownClock = (CircleProgressView)view.findViewById(R.id.count_down_clock);
         if (!isCounting){
             imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
 
@@ -305,7 +309,6 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 break;
             case R.id.imb_stop:
                 stopAction();
-
                 break;
         }
     }
