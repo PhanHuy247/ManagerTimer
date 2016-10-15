@@ -1,102 +1,133 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
     tools:context="com.example.huy.managertimer.fragment.ClockFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:id="@+id/rl_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp">
+        <at.grabner.circleprogress.CircleProgressView
+            android:id="@+id/count_down_clock"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            app:cpv_barColor="@color/colorPrimary"
+            app:cpv_fillColor="#FFFFFF"
+            app:cpv_innerContourColor="#FFFFFF"
+            app:cpv_outerContourColor="#FFFFFF"
+            app:cpv_rimWidth="0dp"
+            app:cpv_seekMode="false"
+            android:layout_alignParentTop="true" />
+        <TextView
+            android:id="@+id/tv_countDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:textColor="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            android:textSize="48sp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:textSize="48dp"
-            android:layout_centerInParent="true"
-            android:id="@+id/tv_countDown"/>
+            android:text="Minutes"
+            android:textSize="32sp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/colorPrimary"
+            android:layout_below="@id/tv_countDown"/>
         <ImageButton
+            android:id="@+id/imb_isWorking"
             android:layout_width="@dimen/buttonDimen"
             android:layout_height="@dimen/buttonDimen"
+            android:layout_marginTop="50dp"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/ic_airline_seat_recline_normal_black_24dp"
-            android:id="@+id/imb_isWorking"
-            android:layout_above="@id/tv_countDown"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
+            android:visibility="gone" />
+
         <TextView
+            android:id="@+id/tv_taskTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
             android:text=""
             android:textColor="@android:color/black"
             android:textSize="36dp"
-            android:id="@+id/tv_taskTitle"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:visibility="visible"/>
+            android:visibility="visible" />
+
         <ImageButton
+            android:id="@+id/imb_isRelaxing"
             android:layout_width="@dimen/buttonDimen"
             android:layout_height="@dimen/buttonDimen"
+            android:layout_marginTop="50dp"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/ic_airline_seat_flat_black_24dp"
-            android:id="@+id/imb_isRelaxing"
-            android:layout_above="@id/tv_countDown"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/button_layout"
-            android:layout_below="@id/tv_countDown"
-            android:gravity="center">
-            <ImageButton
-                android:layout_width="@dimen/buttonDimen"
-                android:layout_height="@dimen/buttonDimen"
-                android:layout_margin="16dp"
-                android:id="@+id/imb_startCD"
-                android:visibility="gone"
-                android:src="@drawable/ic_airline_seat_recline_normal_black_24dp"
-                android:background="@drawable/button_circle"
-                />
-            <ImageButton
-                android:layout_width="@dimen/buttonDimen"
-                android:layout_height="@dimen/buttonDimen"
-                android:layout_margin="16dp"
-                android:id="@+id/imb_break"
-                android:visibility="gone"
-                android:src="@drawable/ic_airline_seat_flat_black_24dp"
-                android:background="@drawable/button_circle"
-                android:layout_toRightOf="@id/imb_startCD"
-                />
-            <ImageButton
-                android:layout_width="@dimen/buttonDimen"
-                android:layout_height="@dimen/buttonDimen"
-                android:layout_margin="16dp"
-                android:id="@+id/imb_skip"
-                android:layout_toRightOf="@id/imb_break"
-                android:src="@drawable/ic_skip_next_black_24dp"
-                android:background="@drawable/button_circle"
-                android:visibility="gone"/>
-            <ImageButton
-                android:layout_width="@dimen/buttonDimen"
-                android:layout_height="@dimen/buttonDimen"
-                android:layout_margin="16dp"
-                android:id="@+id/imb_pause"
-                android:src="@drawable/ic_pause_black_24dp"
-                android:background="@drawable/button_circle"
-                android:layout_toRightOf="@id/imb_skip"
-                android:visibility="gone"/>
-            <ImageButton
-                android:layout_width="@dimen/buttonDimen"
-                android:layout_height="@dimen/buttonDimen"
-                android:layout_margin="16dp"
-                android:id="@+id/imb_stop"
-                android:src="@drawable/ic_stop_black_24dp"
-                android:background="@drawable/button_circle"
-                android:layout_toRightOf="@id/imb_pause"
-                android:visibility="gone"/>
-        </RelativeLayout>
-
-
+            android:visibility="gone" />
     </RelativeLayout>
 
-</FrameLayout>
+    <RelativeLayout
+        android:id="@+id/button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_clock"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/imb_startCD"
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:layout_margin="16dp"
+            android:background="@drawable/button_circle"
+            android:src="@drawable/ic_airline_seat_recline_normal_black_24dp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/imb_break"
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:layout_margin="16dp"
+            android:layout_toRightOf="@id/imb_startCD"
+            android:background="@drawable/button_circle"
+            android:src="@drawable/ic_airline_seat_flat_black_24dp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/imb_skip"
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:layout_margin="16dp"
+            android:layout_toRightOf="@id/imb_break"
+            android:background="@drawable/button_circle"
+            android:src="@drawable/ic_skip_next_black_24dp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/imb_pause"
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:layout_margin="16dp"
+            android:layout_toRightOf="@id/imb_skip"
+            android:background="@drawable/button_circle"
+            android:src="@drawable/ic_pause_black_24dp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/imb_stop"
+            android:layout_width="@dimen/buttonDimen"
+            android:layout_height="@dimen/buttonDimen"
+            android:layout_margin="16dp"
+            android:layout_toRightOf="@id/imb_pause"
+            android:background="@drawable/button_circle"
+            android:src="@drawable/ic_stop_black_24dp"
+            android:visibility="gone" />
+    </RelativeLayout>
+</RelativeLayout>
+
