@@ -8,8 +8,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,19 +25,10 @@ import android.widget.TextView;
 
 import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
-import com.example.huy.managertimer.Task;
-import com.example.huy.managertimer.activity.MainActivity;
 import com.example.huy.managertimer.services.CountdownService;
-import com.google.gson.Gson;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 import at.grabner.circleprogress.CircleProgressView;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME_MODE;
@@ -48,7 +44,7 @@ import static com.example.huy.managertimer.activity.SettingActivity.lBTime;
 import static com.example.huy.managertimer.activity.SettingActivity.lBTimeMode;
 import static com.example.huy.managertimer.activity.SettingActivity.nOSess;
 import static com.example.huy.managertimer.activity.SettingActivity.shakeMode;
-import static com.example.huy.managertimer.activity.SettingActivity.silenceMode;
+import static com.example.huy.managertimer.activity.SettingActivity.silentMode;
 import static com.example.huy.managertimer.activity.SettingActivity.soundMode;
 import static com.example.huy.managertimer.activity.SettingActivity.vol;
 import static com.example.huy.managertimer.activity.SettingActivity.wTime;
@@ -233,7 +229,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         lBTimeMode = settingPrefs.getBoolean(S_LBTIME_MODE, lBTimeMode);
         shakeMode = settingPrefs.getBoolean(S_SHAKE_MODE, shakeMode);
         soundMode = settingPrefs.getBoolean(S_SOUND_MODE, soundMode);
-        silenceMode = settingPrefs.getBoolean(S_SILENCE_MODE, silenceMode);
+        silentMode = settingPrefs.getBoolean(S_SILENCE_MODE, silentMode);
         wifiMode = settingPrefs.getBoolean(S_WIFI_MODE, wifiMode);
 
         if (!isBound){
@@ -396,6 +392,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
             if (intent.getAction().equals(mService.ACTION_FINISH)){
                 hasNext = true;
                 isOnSess = false;
+                notifyUser();
                 imb_isWorking.setVisibility(View.GONE);
                 imb_isRelaxing.setVisibility(View.GONE);
                 if (isWorking){
@@ -438,6 +435,29 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 mService.setupNotification();
             }
 
+        }
+    }
+
+    private void notifyUser() {
+        if (shakeMode){
+            Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 500 milliseconds
+            v.vibrate(1000);
+
+        }
+        if (soundMode){
+            try {
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(getActivity(), notification);
+                r.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (silentMode){
+            AudioManager am;
+            am= (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+            am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
         }
     }
 

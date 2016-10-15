@@ -35,7 +35,7 @@ public class SettingActivity extends AppCompatActivity{
     public static boolean lBTimeMode = true;
     public static boolean shakeMode = true;
     public static boolean soundMode = true;
-    public static boolean silenceMode = false;
+    public static boolean silentMode = false;
     public static boolean wifiMode = false;
 
     public static final String S_WTIME = "saved_wTime";
@@ -127,10 +127,10 @@ public class SettingActivity extends AppCompatActivity{
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b){
-                    silenceMode = true;
+                    silentMode = true;
                 }
                 else {
-                    silenceMode = false;
+                    silentMode = false;
                 }
             }
         });
@@ -184,7 +184,7 @@ public class SettingActivity extends AppCompatActivity{
         sb_volume.setProgress(vol);
 
         sw_wifiMode.setChecked(wifiMode);
-        sw_silenceMode.setChecked(silenceMode);
+        sw_silenceMode.setChecked(silentMode);
         sw_soundMode.setChecked(soundMode);
         sw_shakeMode.setChecked(shakeMode);
         sw_longBTime.setChecked(lBTimeMode);
@@ -263,7 +263,7 @@ public class SettingActivity extends AppCompatActivity{
         editor.putBoolean(S_LBTIME_MODE, lBTimeMode);
         editor.putBoolean(S_SHAKE_MODE, shakeMode);
         editor.putBoolean(S_SOUND_MODE, soundMode);
-        editor.putBoolean(S_SILENCE_MODE, silenceMode);
+        editor.putBoolean(S_SILENCE_MODE, silentMode);
         editor.putBoolean(S_WIFI_MODE, wifiMode);
         editor.commit();
         super.onStop();

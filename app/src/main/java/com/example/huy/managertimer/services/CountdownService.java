@@ -129,11 +129,14 @@ public class CountdownService extends Service {
             }
         }.start();
     }
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+
+
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public Notification.Builder setupNotification () {
         Notification.Builder mBuilder = new Notification.Builder(CountdownService.this);
         int pos = ClockFragment.position;
-
+        String text;
         if (pos==-1){
             title = "defaultTask";
         }
@@ -145,6 +148,7 @@ public class CountdownService extends Service {
         if (isOnSess){
             if (isCounting){
                 pauseID = R.drawable.ic_pause_black_24dp;
+                text = "pause";
             }
             else {
                 pauseID = R.drawable.ic_play_arrow_black_24dp;
