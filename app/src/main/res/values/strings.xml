@@ -19,6 +19,8 @@
 
     <string name="TASK_POS">task_pos</string>
     <string name="dateFormat">dd/MM/yyyy</string>
+    <string name="dateFormat1">dd.MM.yyyy</string>
+    <string name="setTaskTitle">SET_TASK_TITLE</string>
 
 
 </resources>

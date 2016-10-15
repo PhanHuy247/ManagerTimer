@@ -3,6 +3,7 @@ package com.example.huy.managertimer.fragment;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,8 @@ import com.example.huy.managertimer.adapter.TasksAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,6 +76,10 @@ public class TaskFragment extends Fragment {
 
     @Override
     public void onStop() {
+        SharedPreferences preferences = getActivity().getSharedPreferences(getActivity().getString(R.string.setting_pref), MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("noTask", TaskFragment.tasks.size());
+        editor.commit();
         super.onStop();
     }
 }

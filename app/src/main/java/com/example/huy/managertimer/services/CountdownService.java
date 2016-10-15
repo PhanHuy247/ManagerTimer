@@ -31,12 +31,18 @@ import com.example.huy.managertimer.fragment.ClockFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.example.huy.managertimer.fragment.ClockFragment.hasNext;
 import static com.example.huy.managertimer.fragment.ClockFragment.isCounting;
 import static com.example.huy.managertimer.fragment.ClockFragment.isOnSess;
 import static com.example.huy.managertimer.fragment.ClockFragment.isWorking;
+import static com.example.huy.managertimer.fragment.ClockFragment.position;
 
 public class CountdownService extends Service {
     public static final String ACTION_PLAY = "action_play";
@@ -119,6 +125,7 @@ public class CountdownService extends Service {
                         TaskFragment.defaultTask.setWTime(wTime);
                         Log.d("workTime", wTime+"");
                     }
+                    saveDateStat(time);
 
                 }
 
@@ -126,10 +133,25 @@ public class CountdownService extends Service {
                 sendBroadcast(intent);
 
 
+
             }
         }.start();
     }
 
+    private void saveDateStat(long time) {
+        DateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat1));
+        Date date = new Date();
+        SharedPreferences datePrefs = getSharedPreferences(dateFormat.format(date), MODE_PRIVATE);
+        SharedPreferences.Editor editor = datePrefs.edit();
+        Set<String> set = datePrefs.getStringSet(getString(R.string.setTaskTitle), new HashSet<String>());
+
+        set.add(title);
+        editor.putStringSet(getString(R.string.setTaskTitle), set);
+        int wTime = datePrefs.getInt(title, 0);
+        wTime += (int) time/60000;
+        editor.putInt(title, wTime);
+        editor.commit();
+    }
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

@@ -79,6 +79,7 @@ public class TasksAdapter extends BaseAdapter{
                         Intent intent = new Intent(mContext, MainActivity.class);
                         intent.putExtra("position", postition);
                         mContext.startActivity(intent);
+
                         Toast.makeText(mContext, "Start "+ getItem(postition).getTitle(), Toast.LENGTH_SHORT).show();
                         break;
 //                    case R.id.imb_stat:
