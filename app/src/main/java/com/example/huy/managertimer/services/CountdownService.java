@@ -5,10 +5,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,30 +17,21 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
-import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.activity.MainActivity;
-import com.example.huy.managertimer.activity.SettingActivity;
 import com.example.huy.managertimer.fragment.ClockFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
-import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.example.huy.managertimer.fragment.ClockFragment.hasNext;
 import static com.example.huy.managertimer.fragment.ClockFragment.isCounting;
 import static com.example.huy.managertimer.fragment.ClockFragment.isOnSess;
 import static com.example.huy.managertimer.fragment.ClockFragment.isWorking;
-import static com.example.huy.managertimer.fragment.ClockFragment.position;
 
 public class CountdownService extends Service {
     public static final String ACTION_PLAY = "action_play";
@@ -101,6 +90,8 @@ public class CountdownService extends Service {
                  sec = (int) ((millisUntilFinished%60000)/1000);
                 String text = min+" : "+sec;
                 ClockFragment.tv_countdown.setText(text);
+                ClockFragment.countdownClock.setValueAnimated((int)millisUntilFinished/1000);
+                if(min == 0 && sec == 0) ClockFragment.countdownClock.setValueAnimated(0);
                 millisLeft = millisUntilFinished;
                 ClockFragment.imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
                 ClockFragment.curCountdownStr = text;

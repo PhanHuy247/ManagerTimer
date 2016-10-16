@@ -1,68 +1,68 @@
 package com.example.huy.managertimer.fragment;
 
 
+import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.huy.managertimer.HelperClass;
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.constant.Constant;
+import com.example.huy.managertimer.databases.HelperClass;
+import com.example.huy.managertimer.model.Task;
 import com.example.huy.managertimer.services.CountdownService;
+import com.example.huy.managertimer.utilities.GlideUtils;
+import com.example.huy.managertimer.utilities.PreferenceUtils;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 import at.grabner.circleprogress.CircleProgressView;
 
-import static com.example.huy.managertimer.activity.SettingActivity.S_BTIME;
-import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME;
-import static com.example.huy.managertimer.activity.SettingActivity.S_LBTIME_MODE;
-import static com.example.huy.managertimer.activity.SettingActivity.S_NOSESS;
-import static com.example.huy.managertimer.activity.SettingActivity.S_SHAKE_MODE;
-import static com.example.huy.managertimer.activity.SettingActivity.S_SILENCE_MODE;
-import static com.example.huy.managertimer.activity.SettingActivity.S_SOUND_MODE;
-import static com.example.huy.managertimer.activity.SettingActivity.S_VOL;
-import static com.example.huy.managertimer.activity.SettingActivity.S_WIFI_MODE;
-import static com.example.huy.managertimer.activity.SettingActivity.S_WTIME;
 import static com.example.huy.managertimer.activity.SettingActivity.bTime;
 import static com.example.huy.managertimer.activity.SettingActivity.lBTime;
 import static com.example.huy.managertimer.activity.SettingActivity.lBTimeMode;
 import static com.example.huy.managertimer.activity.SettingActivity.nOSess;
 import static com.example.huy.managertimer.activity.SettingActivity.shakeMode;
-import static com.example.huy.managertimer.activity.SettingActivity.silentMode;
+import static com.example.huy.managertimer.activity.SettingActivity.silenceMode;
 import static com.example.huy.managertimer.activity.SettingActivity.soundMode;
 import static com.example.huy.managertimer.activity.SettingActivity.vol;
 import static com.example.huy.managertimer.activity.SettingActivity.wTime;
-import static com.example.huy.managertimer.activity.SettingActivity.wifiMode;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ClockFragment extends Fragment implements View.OnClickListener{
+public class ClockFragment extends Fragment implements View.OnClickListener {
+    public static String TIME_IN_MIN = "timeInMin";
+    public static String POSITION = "position";
     public static CountdownService mService = null;
     public static boolean isWorking;
-
-//    public static boolean isRelaxing;
     public static TextView tv_countdown;
     ImageButton imb_start, imb_skipNext, imb_break, imb_stop;
-    ImageButton imb_isWorking, imb_isRelaxing;
     TextView tv_taskTitle;
-    CircleProgressView countdownClock;
+    public static CircleProgressView countdownClock;
     public static ImageButton imb_pause;
     public static boolean isCounting;
     public static boolean isOnSess;
@@ -72,6 +72,8 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
     ServiceConnection connection;
     public static String curCountdownStr;
     private MyBroadcastReceiver broadcastReceiver;
+    ImageView ivClock;
+    FragmentManager fm;
     public ClockFragment() {
         // Required empty public constructor
     }
@@ -98,9 +100,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_skipNext.setVisibility(View.VISIBLE);
         imb_pause.setVisibility(View.VISIBLE);
         imb_stop.setVisibility(View.VISIBLE);
-        imb_isWorking.setVisibility(View.VISIBLE);
-        imb_isRelaxing.setVisibility(View.GONE);
-        tv_countdown.setText(wTime+" : 00");
+        tv_countdown.setText(wTime + getResources().getString(R.string.time_0));
         isOnSess = true;
         isWorking = true;
         isCounting = true;
@@ -109,8 +109,48 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    @Override
+    public void onStart() {
+        countdownClock.setMaxValue(PreferenceUtils.getValue(getActivity(), Constant.MAX_CIRCLE, 0));
+
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        countdownClock.setMaxValue(PreferenceUtils.getValue(getActivity(), Constant.MAX_CIRCLE, 0));
+        if (PreferenceUtils.getValue(getActivity(),Constant.TASK_SEND,false)) {
+
+            if (isCounting) {
+                Log.d("phanhuy", isCounting + "");
+                Toast.makeText(getActivity().getApplicationContext(), "bạn cần kết thúc tiến trình hiện tại", Toast.LENGTH_LONG).show();
+            } else {
+                if (wTime != 0) {
+                    isCounting = true;
+                    isWorking = true;
+
+                    imb_start.setVisibility(View.GONE);
+                    imb_break.setVisibility(View.GONE);
+                    imb_skipNext.setVisibility(View.VISIBLE);
+                    imb_pause.setVisibility(View.VISIBLE);
+                    imb_stop.setVisibility(View.VISIBLE);
+                    setUpService();
+                    wTime = wTime - getActivity().getIntent().getExtras().getInt(Constant.TASK_FRAGMENT_WORK, 0);
+                    countdownClock.setMaxValue(wTime * 60);
+                    PreferenceUtils.setValue(getActivity(), Constant.MAX_CIRCLE, wTime * 60);
+                    countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
+                    GlideUtils.loadCircleImage(getActivity(), "https://canadianvisa.org/wp-content/uploads/2016/07/group-work-photo1.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
+                    PreferenceUtils.setValue(getActivity(),Constant.TASK_SEND,false);
+                }
+            }
+
+        }
+    }
+
     private void refreshService() {
-        if (mService!=null){
+        if (mService != null) {
             mService.mCountdownTimer.cancel();
             mService.stopSelf();
 
@@ -143,126 +183,118 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_pause = (ImageButton) view.findViewById(R.id.imb_pause);
         imb_break = (ImageButton) view.findViewById(R.id.imb_break);
         imb_stop = (ImageButton) view.findViewById(R.id.imb_stop);
-        imb_isWorking = (ImageButton) view.findViewById(R.id.imb_isWorking);
-        imb_isRelaxing = (ImageButton) view.findViewById(R.id.imb_isRelaxing);
         tv_taskTitle = (TextView) view.findViewById(R.id.tv_taskTitle);
-        countdownClock = (CircleProgressView)view.findViewById(R.id.count_down_clock);
-        if (!isCounting){
+        countdownClock = (CircleProgressView) view.findViewById(R.id.count_down_clock);
+        ivClock = (ImageView) view.findViewById(R.id.ivClock);
+
+        GlideUtils.loadCircleImage(getActivity(), "https://migreat.files.wordpress.com/2014/07/man-with-laptop-sitting-and-thinking-baloon-in-background-flickr-nic519.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
+        if (imb_skipNext.getVisibility() == View.INVISIBLE || imb_skipNext.getVisibility() == View.GONE) {
+            countdownClock.setRimColor(getResources().getColor(R.color.colorPrimary));
+        }
+        if (imb_skipNext.getVisibility() == View.VISIBLE)
+            countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
+        if (!isCounting) {
             imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
 
         }
         getPreferencesData();
-        int temp = getActivity().getIntent().getIntExtra("position", -1);
-        if (position!=temp && temp!=-1){
+        int temp = getActivity().getIntent().getIntExtra(POSITION, -1);
+        if (position != temp && temp != -1) {
             position = temp;
             resetCoundownTimer(position);
-        }
-        else {
+        } else {
             String tmp;
-            if (position==-1){
-                 tmp = "";
+            if (position == -1) {
+                tmp = "";
 
-            }
-            else {
+            } else {
                 tmp = TaskFragment.tasks.get(position).getTitle();
             }
             tv_taskTitle.setText(tmp);
 
         }
-        if (isOnSess){
+        if (isOnSess) {
             tv_countdown.setText(curCountdownStr);
             imb_start.setVisibility(View.GONE);
             imb_break.setVisibility(View.GONE);
             imb_skipNext.setVisibility(View.VISIBLE);
             imb_pause.setVisibility(View.VISIBLE);
             imb_stop.setVisibility(View.VISIBLE);
-            if (isWorking){
-                imb_isWorking.setVisibility(View.VISIBLE);
-                imb_isRelaxing.setVisibility(View.GONE);
-            }
-            else {
-                imb_isWorking.setVisibility(View.GONE);
-                imb_isRelaxing.setVisibility(View.VISIBLE);
-            }
 
-        }
-        else {
-            if (hasNext){
-                if (isWorking){
-                    tv_countdown.setText(""+bTime+" : 00");
+        } else {
+            if (hasNext) {
+                if (isWorking) {
+                    tv_countdown.setText(bTime + getResources().getString(R.string.time_0));
                     imb_start.setVisibility(View.GONE);
                     imb_break.setVisibility(View.VISIBLE);
                     imb_skipNext.setVisibility(View.VISIBLE);
                     imb_pause.setVisibility(View.GONE);
                     imb_stop.setVisibility(View.GONE);
-                }
-                else {
-                    tv_countdown.setText(""+wTime+" : 00");
+                } else {
+                    tv_countdown.setText(wTime + getResources().getString(R.string.time_0));
                     imb_start.setVisibility(View.VISIBLE);
                     imb_break.setVisibility(View.GONE);
                     imb_skipNext.setVisibility(View.VISIBLE);
                     imb_pause.setVisibility(View.GONE);
                     imb_stop.setVisibility(View.GONE);
                 }
-            }
-            else {
-                tv_countdown.setText(""+wTime+" : 00");
+            } else {
+                tv_countdown.setText(wTime + getResources().getString(R.string.time_0));
                 imb_start.setVisibility(View.VISIBLE);
                 imb_break.setVisibility(View.VISIBLE);
                 imb_skipNext.setVisibility(View.GONE);
                 imb_pause.setVisibility(View.GONE);
                 imb_stop.setVisibility(View.GONE);
             }
-
-
-
+            countdownClock.setMaxValue(PreferenceUtils.getValue(getActivity(), Constant.MAX_CIRCLE, 0));
         }
     }
 
     private void getPreferencesData() {
-        SharedPreferences settingPrefs = getActivity().getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
-        wTime = settingPrefs.getInt(S_WTIME, wTime);
-        bTime = settingPrefs.getInt(S_BTIME, bTime);
-        lBTime = settingPrefs.getInt(S_LBTIME, lBTime);
-        nOSess = settingPrefs.getInt(S_NOSESS, nOSess);
-        vol = settingPrefs.getInt(S_VOL, vol);
-        lBTimeMode = settingPrefs.getBoolean(S_LBTIME_MODE, lBTimeMode);
-        shakeMode = settingPrefs.getBoolean(S_SHAKE_MODE, shakeMode);
-        soundMode = settingPrefs.getBoolean(S_SOUND_MODE, soundMode);
-        silentMode = settingPrefs.getBoolean(S_SILENCE_MODE, silentMode);
-        wifiMode = settingPrefs.getBoolean(S_WIFI_MODE, wifiMode);
 
-        if (!isBound){
-           HelperClass.getTasks(getActivity());
+        wTime = PreferenceUtils.getValue(getActivity(), Constant.S_WTIME, wTime);
+        bTime = PreferenceUtils.getValue(getActivity(), Constant.S_BTIME, bTime);
+        lBTime = PreferenceUtils.getValue(getActivity(), Constant.S_LBTIME, lBTime);
+        nOSess = PreferenceUtils.getValue(getActivity(), Constant.S_NOSESS, nOSess);
+        vol = PreferenceUtils.getValue(getActivity(), Constant.S_VOL, vol);
+        lBTimeMode = PreferenceUtils.getValue(getActivity(), Constant.S_LBTIME_MODE, lBTimeMode);
+        shakeMode = PreferenceUtils.getValue(getActivity(), Constant.S_SHAKE_MODE, shakeMode);
+        soundMode = PreferenceUtils.getValue(getActivity(), Constant.S_SOUND_MODE, soundMode);
+        silenceMode = PreferenceUtils.getValue(getActivity(), Constant.S_SILENCE_MODE, silenceMode);
+
+        if (!isBound) {
+            HelperClass.getTasks(getActivity());
         }
 
 
     }
 
 
-
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.imb_startCD:
-                startAction();
+               startAction();
                 break;
             case R.id.imb_break:
-                breakAction();
+               breakAction();
                 break;
             case R.id.imb_pause:
-                pauseAction();
+               pauseAction();
                 break;
             case R.id.imb_skip:
                 skipAction();
                 break;
             case R.id.imb_stop:
+
                 stopAction();
+
                 break;
         }
     }
 
-    private void breakAction() {
+    private void breakAction(){
         isCounting = true;
         isWorking = false;
         imb_start.setVisibility(View.GONE);
@@ -271,9 +303,49 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_pause.setVisibility(View.VISIBLE);
         imb_stop.setVisibility(View.VISIBLE);
         setUpService();
+        countdownClock.setMaxValue(bTime * 60);
+        PreferenceUtils.setValue(getActivity(), Constant.MAX_CIRCLE, bTime * 60);
+        countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
+        GlideUtils.loadCircleImage(getActivity(), "http://imgs.emdep.vn/Share/Image/2014/11/28/the-ngu-ba-dao8-155027125.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
     }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private void pauseAction(){
+        if (isCounting) {
+            imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+            isCounting = false;
 
-    private void startAction() {
+            mService.mCountdownTimer.cancel();
+        } else {
+            isCounting = true;
+            mService.setUpCountdownTimer(mService.millisLeft);
+        }
+    }
+    private void skipAction(){
+        if (isOnSess) {
+            if (isWorking) {
+                isWorking = false;
+                countdownClock.setMaxValue(bTime * 60);
+                GlideUtils.loadCircleImage(getActivity(), "http://imgs.emdep.vn/Share/Image/2014/11/28/the-ngu-ba-dao8-155027125.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
+            } else {
+                isWorking = true;
+                countdownClock.setMaxValue(wTime * 60);
+                GlideUtils.loadCircleImage(getActivity(), "https://canadianvisa.org/wp-content/uploads/2016/07/group-work-photo1.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
+            }
+        } else {
+
+        }
+        isCounting = true;
+
+        imb_start.setVisibility(View.GONE);
+        imb_break.setVisibility(View.GONE);
+        imb_skipNext.setVisibility(View.VISIBLE);
+        imb_pause.setVisibility(View.VISIBLE);
+        imb_stop.setVisibility(View.VISIBLE);
+        mService.mCountdownTimer.cancel();
+        mService.stopSelf();
+        setUpService();
+    }
+    private void startAction(){
         isCounting = true;
         isWorking = true;
 
@@ -283,55 +355,17 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         imb_pause.setVisibility(View.VISIBLE);
         imb_stop.setVisibility(View.VISIBLE);
         setUpService();
+        countdownClock.setMaxValue(wTime * 60);
+        PreferenceUtils.setValue(getActivity(), Constant.MAX_CIRCLE, wTime * 60);
+        countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
+        GlideUtils.loadCircleImage(getActivity(), "https://canadianvisa.org/wp-content/uploads/2016/07/group-work-photo1.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
     }
-
-    private void pauseAction() {
-        if (isCounting){
-            imb_pause.setImageResource(R.drawable.ic_play_arrow_black_24dp);
-            isCounting = false;
-
-            mService.mCountdownTimer.cancel();
-        }
-        else {
-            isCounting = true;
-            mService.setUpCountdownTimer(mService.millisLeft);
-        }
-    }
-
-    private void skipAction() {
-        if (isOnSess){
-            if (isWorking){
-                isWorking = false;
-            }
-            else {
-                isWorking = true;
-            }
-        }
-        else {
-            Log.d("khuong", isWorking+"");
-        }
-
-
-        isCounting = true;
-
-        imb_start.setVisibility(View.GONE);
-        imb_break.setVisibility(View.GONE);
-        imb_skipNext.setVisibility(View.VISIBLE);
-        imb_pause.setVisibility(View.VISIBLE);
-        imb_stop.setVisibility(View.VISIBLE);
-        mService.mCountdownTimer.cancel();
-        mService.stopSelf();
-        setUpService();
-    }
-
     private void stopAction() {
         isCounting = false;
         isOnSess = false;
         isWorking = false;
         hasNext = false;
-        tv_countdown.setText(""+wTime+" : 00");
-        imb_isWorking.setVisibility(View.GONE);
-        imb_isRelaxing.setVisibility(View.GONE);
+        tv_countdown.setText(wTime + getResources().getString(R.string.time_0));
         imb_start.setVisibility(View.VISIBLE);
         imb_break.setVisibility(View.VISIBLE);
         imb_skipNext.setVisibility(View.GONE);
@@ -341,7 +375,13 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         mService.stopForeground(true);
         mService.stopSelf();
         HelperClass.saveTasks(getActivity());
-
+        countdownClock.setRimColor(getResources().getColor(R.color.colorPrimary));
+        countdownClock.setValue(0);
+        countdownClock.setRimColor(getResources().getColor(R.color.colorPrimary));
+        GlideUtils.loadCircleImage(getActivity(), "https://migreat.files.wordpress.com/2014/07/man-with-laptop-sitting-and-thinking-baloon-in-background-flickr-nic519.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
+        fm = getActivity().getFragmentManager();
+        AddingTaskDialogFragment dialogFragment = new AddingTaskDialogFragment();
+        dialogFragment.show(fm, "Sample Fragment");
     }
 
     private void setUpService() {
@@ -363,38 +403,34 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
         startNewCountdownService();
 
     }
-    private void startNewCountdownService(){
+
+    private void startNewCountdownService() {
         Intent intent = new Intent(getActivity(), CountdownService.class);
         int a;
-        if (isWorking){
+        if (isWorking) {
             a = wTime;
-            imb_isWorking.setVisibility(View.VISIBLE);
-            imb_isRelaxing.setVisibility(View.GONE);
+        } else {
+            a = bTime;
         }
-        else {
-            a= bTime;
-            imb_isRelaxing.setVisibility(View.VISIBLE);
-            imb_isWorking.setVisibility(View.GONE);
-        }
-        intent.putExtra("timeInMin", a);
+        intent.putExtra(TIME_IN_MIN, a);
         getActivity().startService(intent);
         isOnSess = true;
-        if (isBound==false){
+        if (isBound == false) {
             getActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE);
             isBound = true;
         }
 
     }
+
     private class MyBroadcastReceiver extends BroadcastReceiver{
 
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(mService.ACTION_FINISH)){
                 hasNext = true;
                 isOnSess = false;
                 notifyUser();
-                imb_isWorking.setVisibility(View.GONE);
-                imb_isRelaxing.setVisibility(View.GONE);
                 if (isWorking){
                     tv_countdown.setText(bTime+" : 00");
                     imb_break.setVisibility(View.VISIBLE);
@@ -454,12 +490,11 @@ public class ClockFragment extends Fragment implements View.OnClickListener{
                 e.printStackTrace();
             }
         }
-        if (silentMode){
+        if (silenceMode){
             AudioManager am;
             am= (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
             am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
         }
     }
-
 
 }

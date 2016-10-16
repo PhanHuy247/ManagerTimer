@@ -1,11 +1,12 @@
-package com.example.huy.managertimer;
+package com.example.huy.managertimer.databases;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.example.huy.managertimer.activity.MainActivity;
+import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.fragment.TaskFragment;
+import com.example.huy.managertimer.model.Task;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

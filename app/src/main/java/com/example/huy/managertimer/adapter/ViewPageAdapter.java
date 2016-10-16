@@ -33,7 +33,6 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
         lFragment.add(fragment);
         lString.add(string);
     }
-
     @Override
     public CharSequence getPageTitle(int position) {
         return lString.get(position);

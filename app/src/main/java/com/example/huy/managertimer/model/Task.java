@@ -1,6 +1,4 @@
-package com.example.huy.managertimer;
-
-import java.util.Date;
+package com.example.huy.managertimer.model;
 
 /**
  * Created by Laptop88 on 10/10/2016.

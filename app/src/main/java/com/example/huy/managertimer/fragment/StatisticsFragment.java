@@ -2,17 +2,13 @@ package com.example.huy.managertimer.fragment;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -21,21 +17,21 @@ import com.example.huy.managertimer.Interface.IOnStatisticsClickListener;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.adapter.StatisticsAdapter;
 import com.example.huy.managertimer.model.StatisticsItem;
+import com.example.huy.managertimer.utilities.PreferenceUtils;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class StatisticsFragment extends Fragment{
+public class StatisticsFragment extends Fragment implements IOnStatisticsClickListener {
 
+    ArrayList<StatisticsItem> listStatistic = new ArrayList<>();
+    StatisticsAdapter statisticAdapter;
+    Calendar calendar = Calendar.getInstance();
+    RecyclerView rvStatistics;
 
     public StatisticsFragment() {
         // Required empty public constructor
@@ -49,53 +45,69 @@ public class StatisticsFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
         setupView(view);
-
         return view;
     }
 
-    @Override
-    public void onResume() {
-        getDateStat();
-        super.onResume();
+    private void setupView(View view) {
+        createDataForRecycler();
+        rvStatistics = (RecyclerView) view.findViewById(R.id.rvStatistics);
+        statisticAdapter = new StatisticsAdapter(getContext(), listStatistic);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        rvStatistics.setLayoutManager(linearLayoutManager);
+        rvStatistics.setAdapter(statisticAdapter);
+        statisticAdapter.setOnItemClickListener(this);
     }
 
-    private void getDateStat() {
-        DateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat1));
+    private void createDataForRecycler() {
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
 
         for (int i = 0; i < 7; i++) {
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, -i);
-            Date todate = cal.getTime();
-            String date = dateFormat.format(todate);
-            SharedPreferences datePrefs = getActivity().getSharedPreferences(date, Context.MODE_PRIVATE);
-            Set<String> set = datePrefs.getStringSet(getString(R.string.setTaskTitle), new HashSet<String>());
 
-            int totalWTime = 0;
-            for (String ins:set){
-                int wTime = datePrefs.getInt(ins, 0);
-                totalWTime+=wTime;
-               Log.d("huydien",date+" "+ ins+":"+wTime);
-            }
-            Log.d("huydien_total", date+" "+totalWTime+"");
-
+            String month_name = month_date.format(calendar.getTime());
+            listStatistic.add(new StatisticsItem(month_name + " " + (calendar.get(Calendar.DATE) - i), getActivity().getSharedPreferences(getResources().getString(R.string.setting_pref), Context.MODE_PRIVATE).getInt(calendar.get(Calendar.DATE)+"work",0)+"", "00:12", PreferenceUtils.getValue(getActivity(),calendar.get(Calendar.DATE) + "break",0)+"", "02:2"));
         }
+
+//        if (dayMonthAgo < 7) {
+//
+//            calendar.add(Calendar.MONTH, -1);
+//            SimpleDateFormat format = new SimpleDateFormat("MMMM");
+//            String monthAgo = format.format(calendar.getTime());
+//
+//            for (int i = dayMonthAgo; i < 7; i++) {
+//                listStatistic.add(new StatisticsItem(monthAgo + " " + (calendar.get(Calendar.DATE) - i+calendar.get(Calendar.DAY_OF_MONTH)), getActivity().getSharedPreferences(getResources().getString(R.string.setting_pref), Context.MODE_PRIVATE).getInt(calendar.get(Calendar.DATE)+"work",0)+"", "00:12", "2", "02:2"));
+//            }
+//        }
     }
 
-    private void setupView(View view) {
-
-
-    }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.statisticmenu, menu);
+    public void onClick(final StatisticsItem statisticsItem) {
+            new AlertDialog.Builder(getContext())
+                    .setIcon(R.mipmap.ic_launcher)
+                    .setMessage("Are you sure reset")
+                    .setPositiveButton("OK", null)
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            statisticsItem.setTvNumberBreak("0");
+                            statisticsItem.setTvNumberWork("0");
+                            statisticsItem.setTvTimeBreak("0");
+                            statisticsItem.setTvTimeWork("0");
+                            statisticAdapter.notifyDataSetChanged();
+                            getActivity().getSharedPreferences(getResources().getString(R.string.setting_pref),0).edit().putInt(calendar.get(Calendar.DATE)+"work",0).apply();
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            Toast.makeText(getActivity(), "You've Cancle Reset", Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
     }
 
 }

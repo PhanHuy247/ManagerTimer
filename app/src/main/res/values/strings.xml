@@ -1,26 +1,42 @@
 <resources>
-    <string name="app_name">25 Minutes</string>
+    <string name="app_name">25 Phút</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Title Fragment-->
-    <string name="Time">Time</string>
-    <string name="Task">Task</string>
-    <string name="Chart">Statistics</string>
+    <string name="Time">Thời Gian</string>
+    <string name="Task">Công Việc</string>
+    <string name="Chart">Biểu Đồ</string>
 
-    <string name="setting">Setting</string>
+    <!-- Setting Activiti-->
+    <string name="setting">Cài Đặt</string>
     <string name="work">Work</string>
     <string name="reset_all">reset All</string>
     <string name="setting_pref">com.example.25min.SETTING_PREF</string>
-    <string name="tasks_infos">com.example.25min.TASKS_INFOS</string>
+    <string name="tasks_infos">TASKS_INFOS</string>
     <string name="defaultTask">defaultTask</string>
     <string name="task_title_hint">Title</string>
 
-    <string name="TASK_POS">task_pos</string>
+    <!-- clock Fragment -->
+    <string name="time_0"> : 00</string>
+    <string name="th_i_gian_ngh_ph_t">Thời gian nghỉ (phút):</string>
+    <string name="k_ch_ho_t_ngh_d_i">Kích hoạt nghỉ dài</string>
+    <string name="c_i_t">Cài Đặt</string>
+    <string name="th_i_gian_ngh_d_i_ph_t">Thời gian nghỉ dài (phút):</string>
+    <string name="s_phi_n_l_m_vi_c_tr_c_phi_n_ngh_d_i">Số phiên làm việc trước phiên nghỉ dài:</string>
+    <string name="ch_rung">Chế độ rung</string>
+    <string name="m_thanh">Âm thanh</string>
+    <string name="ki_u">Kiểu</string>
+    <string name="m_l_ng">Âm lượng</string>
+    <string name="giao_di_n">Giao diện</string>
+    <string name="t_t_m_thanh_trong_phi_n_l_m_vi_c">Tắt âm thanh trong phiên làm việc</string>
+    <string name="t_t_wifi_trong_phi_n_l_m_vi_c">Tắt Wifi trong phiên làm việc</string>
+    <string name="th_ng_b_o">Thông báo</string>
+    <string name="kh_c">Khác</string>
+
     <string name="dateFormat">dd/MM/yyyy</string>
     <string name="dateFormat1">dd.MM.yyyy</string>
     <string name="setTaskTitle">SET_TASK_TITLE</string>
-
-
+    <string name="TASK_POS">task_pos</string>
 </resources>

@@ -4,13 +4,12 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.huy.managertimer.R;
-import com.example.huy.managertimer.Task;
 import com.example.huy.managertimer.fragment.TaskFragment;
+import com.example.huy.managertimer.model.Task;
 
 import java.text.DateFormat;
 import java.text.ParseException;

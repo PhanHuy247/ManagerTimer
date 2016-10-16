@@ -1,63 +1,73 @@
 package com.example.huy.managertimer.activity;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.PorterDuff;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.constant.Constant;
 import com.example.huy.managertimer.fragment.ClockFragment;
+import com.example.huy.managertimer.utilities.CorrectSizeUtil;
+import com.example.huy.managertimer.utilities.PreferenceUtils;
 
-public class SettingActivity extends AppCompatActivity{
+public class SettingActivity extends AppCompatActivity implements View.OnClickListener {
     TextView tv_wTime, tv_bTime, tv_longBTime;
     TextView tv_SessBefLongBTime;
     TextView tv_SessBefLongBreak;
     TextView tv_vol;
     TextView tv_longBreak;
     TextView tv_typeSound;
+    ImageView ivArrowSetting;
     SeekBar sb_wTime, sb_bTime, sb_longBTime;
     SeekBar sb_volume;
     SeekBar sb_SessBefLongBTime;
     Switch sw_longBTime, sw_shakeMode, sw_soundMode, sw_silenceMode, sw_wifiMode;
     Spinner sp_typeSound;
 
-    public static  int wTime = 25;
-    public static  int bTime = 5;
-    public static  int lBTime = 20;
-    public static  int nOSess = 4;
-    public static  int vol = 50;
+    public static int wTime = 25;
+    public static int bTime = 5;
+    public static int lBTime = 20;
+    public static int nOSess = 4;
+    public static int vol = 50;
     public static boolean lBTimeMode = true;
     public static boolean shakeMode = true;
     public static boolean soundMode = true;
-    public static boolean silentMode = false;
-    public static boolean wifiMode = false;
+    public static boolean silenceMode = false;
 
-    public static final String S_WTIME = "saved_wTime";
-    public static final String S_BTIME = "saved_bTime";
-    public static final String S_LBTIME = "saved_lBTime";
-    public static final String S_NOSESS = "saved_nOSess";
-    public static final String S_VOL = "saved_vol";
-    public static final String S_LBTIME_MODE = "saved_lBTime_mode";
-    public static final String S_SHAKE_MODE = "saved_shake_mode";
-    public static final String S_SOUND_MODE = "saved_sound_mode";
-    public static final String S_SILENCE_MODE = "saved_silence_mode";
-    public static final String S_WIFI_MODE = "saved_wifi_mode";
-
-
+    WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        CorrectSizeUtil.getInstance(this).correctSize(findViewById(R.id.rlSetting));
         initView();
         initSetting();
         setOnViewClick();
+        setOnWifi();
+    }
+
+    private void setOnWifi() {
+
+        sw_wifiMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    wifiManager.setWifiEnabled(true);
+                } else {
+                    wifiManager.setWifiEnabled(false);
+                }
+            }
+        });
     }
 
     private void setOnViewClick() {
@@ -66,10 +76,17 @@ public class SettingActivity extends AppCompatActivity{
         setOnSeekBarChange(sb_longBTime, tv_longBTime);
         setOnSeekBarChange(sb_SessBefLongBTime, tv_SessBefLongBTime);
 
+        ivArrowSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         sw_longBTime.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+                if (b) {
                     tv_longBTime.setVisibility(View.VISIBLE);
                     tv_longBreak.setVisibility(View.VISIBLE);
                     tv_SessBefLongBTime.setVisibility(View.VISIBLE);
@@ -77,8 +94,7 @@ public class SettingActivity extends AppCompatActivity{
                     sb_longBTime.setVisibility(View.VISIBLE);
                     sb_SessBefLongBTime.setVisibility(View.VISIBLE);
                     lBTimeMode = true;
-                }
-                else {
+                } else {
 
                     tv_longBTime.setVisibility(View.GONE);
                     tv_longBreak.setVisibility(View.GONE);
@@ -94,10 +110,9 @@ public class SettingActivity extends AppCompatActivity{
         sw_shakeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+                if (b) {
                     shakeMode = true;
-                }
-                else {
+                } else {
                     shakeMode = false;
                 }
             }
@@ -106,14 +121,13 @@ public class SettingActivity extends AppCompatActivity{
         sw_soundMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+                if (b) {
                     soundMode = true;
                     tv_typeSound.setVisibility(View.VISIBLE);
                     sp_typeSound.setVisibility(View.VISIBLE);
                     tv_vol.setVisibility(View.VISIBLE);
                     sb_volume.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     soundMode = false;
                     tv_typeSound.setVisibility(View.GONE);
                     sp_typeSound.setVisibility(View.GONE);
@@ -126,32 +140,23 @@ public class SettingActivity extends AppCompatActivity{
         sw_silenceMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    silentMode = true;
-                }
-                else {
-                    silentMode = false;
+                if (b) {
+                    silenceMode = true;
+                } else {
+                    silenceMode = false;
                 }
             }
         });
 
-        sw_wifiMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    wifiMode = true;
-                }
-                else {
-                    wifiMode = false;
-                }
-            }
-        });
     }
-    private void setOnSeekBarChange(SeekBar sb, final TextView tv){
+
+    private void setOnSeekBarChange(SeekBar sb, final TextView tv) {
+
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                tv.setText(i+"");
+                tv.setText(i + "");
+
             }
 
             @Override
@@ -161,7 +166,7 @@ public class SettingActivity extends AppCompatActivity{
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (seekBar.getProgress()==0){
+                if (seekBar.getProgress() == 0) {
                     seekBar.setProgress(1);
                 }
             }
@@ -171,11 +176,10 @@ public class SettingActivity extends AppCompatActivity{
     private void initSetting() {
 
 
-
-        tv_wTime.setText(wTime+"");
-        tv_bTime.setText(bTime+"");
-        tv_longBTime.setText(lBTime+"");
-        tv_SessBefLongBTime.setText(nOSess+"");
+        tv_wTime.setText(wTime + "");
+        tv_bTime.setText(bTime + "");
+        tv_longBTime.setText(lBTime + "");
+        tv_SessBefLongBTime.setText(nOSess + "");
 
         sb_wTime.setProgress(wTime);
         sb_bTime.setProgress(bTime);
@@ -183,13 +187,13 @@ public class SettingActivity extends AppCompatActivity{
         sb_SessBefLongBTime.setProgress(nOSess);
         sb_volume.setProgress(vol);
 
-        sw_wifiMode.setChecked(wifiMode);
-        sw_silenceMode.setChecked(silentMode);
+        sw_wifiMode.setChecked(wifiManager.isWifiEnabled());
+        sw_silenceMode.setChecked(silenceMode);
         sw_soundMode.setChecked(soundMode);
         sw_shakeMode.setChecked(shakeMode);
         sw_longBTime.setChecked(lBTimeMode);
 
-        if (!lBTimeMode){
+        if (!lBTimeMode) {
             tv_longBTime.setVisibility(View.GONE);
             tv_longBreak.setVisibility(View.GONE);
             tv_SessBefLongBTime.setVisibility(View.GONE);
@@ -197,7 +201,7 @@ public class SettingActivity extends AppCompatActivity{
             sb_longBTime.setVisibility(View.GONE);
             sb_SessBefLongBTime.setVisibility(View.GONE);
         }
-        if (!soundMode){
+        if (!soundMode) {
             tv_typeSound.setVisibility(View.GONE);
             sp_typeSound.setVisibility(View.GONE);
             tv_vol.setVisibility(View.GONE);
@@ -206,14 +210,14 @@ public class SettingActivity extends AppCompatActivity{
     }
 
     private void initView() {
-        tv_wTime = (TextView)findViewById(R.id.tv_workTime);
-        tv_bTime = (TextView)findViewById(R.id.tv_breakTime);
-        tv_longBTime = (TextView)findViewById(R.id.tv_longBreakTime);
-        tv_vol = (TextView)findViewById(R.id.tv_volume);
-        tv_longBreak = (TextView)findViewById(R.id.tv_lBreak);
-        tv_SessBefLongBTime = (TextView)findViewById(R.id.tv_SessBefLongBTime);
-        tv_SessBefLongBreak = (TextView)findViewById(R.id.tv_SessBefLongBreak);
-        tv_typeSound = (TextView)findViewById(R.id.tv_typeSound);
+        tv_wTime = (TextView) findViewById(R.id.tv_workTime);
+        tv_bTime = (TextView) findViewById(R.id.tv_breakTime);
+        tv_longBTime = (TextView) findViewById(R.id.tv_longBreakTime);
+        tv_vol = (TextView) findViewById(R.id.tv_volume);
+        tv_longBreak = (TextView) findViewById(R.id.tv_lBreak);
+        tv_SessBefLongBTime = (TextView) findViewById(R.id.tv_SessBefLongBTime);
+        tv_SessBefLongBreak = (TextView) findViewById(R.id.tv_SessBefLongBreak);
+        tv_typeSound = (TextView) findViewById(R.id.tv_typeSound);
         sb_wTime = (SeekBar) findViewById(R.id.sb_workTime);
         sb_bTime = (SeekBar) findViewById(R.id.sb_breakTime);
         sb_volume = (SeekBar) findViewById(R.id.sb_volume);
@@ -225,6 +229,13 @@ public class SettingActivity extends AppCompatActivity{
         sw_silenceMode = (Switch) findViewById(R.id.sw_silenceMode);
         sw_wifiMode = (Switch) findViewById(R.id.sw_wifiMode);
         sp_typeSound = (Spinner) findViewById(R.id.sp_typeSound);
+        ivArrowSetting = (ImageView) findViewById(R.id.ivArrowSetting);
+        wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+        sb_wTime.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+        sb_bTime.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+        sb_volume.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+        sb_longBTime.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+        sb_SessBefLongBTime.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
     }
 
     @Override
@@ -235,38 +246,41 @@ public class SettingActivity extends AppCompatActivity{
     @Override
     protected void onStop() {
         wTime = sb_wTime.getProgress();
+//        if(wTime < 10) wTime = 10;
         bTime = sb_bTime.getProgress();
+//        if(bTime < 1) bTime = 1;
         lBTime = sb_longBTime.getProgress();
+//        if(lBTime < 30) lBTime = 30;
         nOSess = sb_SessBefLongBTime.getProgress();
+//        if(nOSess < 3) nOSess = 3;
         vol = sb_volume.getProgress();
 
-        if (ClockFragment.mService==null){
-            ClockFragment.tv_countdown.setText(wTime+" : 00");
-        }
-        else {
-            if (!ClockFragment.isOnSess){
-                if (ClockFragment.isWorking){
-                    ClockFragment.tv_countdown.setText(bTime+" : 00");
-                }
-                else {
-                    ClockFragment.tv_countdown.setText(wTime+" : 00");
+        if (ClockFragment.mService == null) {
+            ClockFragment.tv_countdown.setText(wTime + getResources().getString(R.string.time_0));
+        } else {
+            if (!ClockFragment.isOnSess) {
+                if (ClockFragment.isWorking) {
+                    ClockFragment.tv_countdown.setText(bTime + getResources().getString(R.string.time_0));
+                } else {
+                    ClockFragment.tv_countdown.setText(wTime + getResources().getString(R.string.time_0));
                 }
             }
         }
-        SharedPreferences preferences = getSharedPreferences(getString(R.string.setting_pref), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(S_WTIME, wTime);
-        editor.putInt(S_BTIME, bTime);
-        editor.putInt(S_LBTIME, lBTime);
-        editor.putInt(S_NOSESS, nOSess);
-        editor.putInt(S_VOL, vol);
-        editor.putBoolean(S_LBTIME_MODE, lBTimeMode);
-        editor.putBoolean(S_SHAKE_MODE, shakeMode);
-        editor.putBoolean(S_SOUND_MODE, soundMode);
-        editor.putBoolean(S_SILENCE_MODE, silentMode);
-        editor.putBoolean(S_WIFI_MODE, wifiMode);
-        editor.commit();
+        PreferenceUtils.setValue(this, Constant.S_WTIME, wTime);
+        PreferenceUtils.setValue(this, Constant.S_BTIME, bTime);
+        PreferenceUtils.setValue(this, Constant.S_LBTIME, lBTime);
+        PreferenceUtils.setValue(this, Constant.S_NOSESS, nOSess);
+        PreferenceUtils.setValue(this, Constant.S_VOL, vol);
+        PreferenceUtils.setValue(this, Constant.S_LBTIME_MODE, lBTimeMode);
+        PreferenceUtils.setValue(this, Constant.S_SHAKE_MODE, shakeMode);
+        PreferenceUtils.setValue(this, Constant.S_SOUND_MODE, soundMode);
+        PreferenceUtils.setValue(this, Constant.S_SILENCE_MODE, silenceMode);
+
         super.onStop();
     }
 
+    @Override
+    public void onClick(View v) {
+
+    }
 }

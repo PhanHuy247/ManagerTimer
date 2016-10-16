@@ -3,32 +3,37 @@ package com.example.huy.managertimer.fragment;
 
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.huy.managertimer.Interface.IOnClickListenerTask;
 import com.example.huy.managertimer.R;
-import com.example.huy.managertimer.Task;
-import com.example.huy.managertimer.activity.TaskDetailActivity;
+import com.example.huy.managertimer.activity.MainActivity;
+import com.example.huy.managertimer.adapter.ViewPageAdapter;
+import com.example.huy.managertimer.constant.Constant;
+import com.example.huy.managertimer.model.Task;
 import com.example.huy.managertimer.adapter.TasksAdapter;
+import com.example.huy.managertimer.utilities.PreferenceUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaskFragment extends Fragment {
+public class TaskFragment extends Fragment implements IOnClickListenerTask{
     public static ArrayList<Task> tasks = new ArrayList<>();
-    public static Task defaultTask = new Task(0, "", "whatever");
+    public static Task defaultTask = new Task(0, "","");
+    public static TasksAdapter taskAdapter;
+
     ListView lv_tasks;
     private FloatingActionButton fabMain;
     public TaskFragment() {
@@ -40,6 +45,8 @@ public class TaskFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
         View view = inflater.inflate(R.layout.fragment_task, container, false);
         initView(view);
         return view;
@@ -47,14 +54,6 @@ public class TaskFragment extends Fragment {
 
     private void initView(View view) {
         lv_tasks = (ListView) view.findViewById(R.id.lv_tasks);
-        lv_tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(), TaskDetailActivity.class);
-                intent.putExtra(getString(R.string.TASK_POS), i);
-                startActivity(intent);
-            }
-        });
         fabMain = (FloatingActionButton) view.findViewById(R.id.fabMain);
         fabMain.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,22 +63,24 @@ public class TaskFragment extends Fragment {
                 dialogFragment.show(fm, "Sample Fragment");
             }
         });
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        TasksAdapter taskAdapter = new TasksAdapter(tasks, getActivity());
+        taskAdapter = new TasksAdapter(tasks, getActivity());
         lv_tasks.setAdapter(taskAdapter);
+        taskAdapter.setOnItemClick(this);
     }
 
     @Override
-    public void onStop() {
-        SharedPreferences preferences = getActivity().getSharedPreferences(getActivity().getString(R.string.setting_pref), MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("noTask", TaskFragment.tasks.size());
-        editor.commit();
-        super.onStop();
+    public void clickItem(int position) {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.putExtra(Constant.TASK_FRAGMENT,tasks.get(position).getTitle());
+        intent.putExtra(Constant.TASK_FRAGMENT_WORK,tasks.get(position).getWTime());
+        PreferenceUtils.setValue(getActivity(),Constant.TASK_SEND,true);
+        startActivity(intent);
+        getActivity().finish();
     }
 }
