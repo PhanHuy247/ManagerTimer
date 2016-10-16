@@ -31,5 +31,6 @@ public class Constant {
     public static final String TASK_FRAGMENT_WORK= "task_fragment_work";
 
     public static final String TASK_SEND = "task_send";
+    public static final String TIME_STOP = "time_stop";
 
 }

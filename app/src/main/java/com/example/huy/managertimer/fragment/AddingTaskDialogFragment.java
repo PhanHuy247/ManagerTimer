@@ -17,8 +17,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.huy.managertimer.R;
+import com.example.huy.managertimer.constant.Constant;
 import com.example.huy.managertimer.databases.HelperClass;
 import com.example.huy.managertimer.model.Task;
+import com.example.huy.managertimer.utilities.PreferenceUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -68,8 +70,9 @@ public class AddingTaskDialogFragment extends DialogFragment implements View.OnC
                 if (!edt_title.getText().equals("")){
                     DateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat));
                     Date date = new Date();
-                    Task nTask = new Task(0, edt_title.getText().toString(), dateFormat.format(date));
+                    Task nTask = new Task(PreferenceUtils.getValue(getActivity(), Constant.TIME_STOP,0), edt_title.getText().toString(), dateFormat.format(date));
                     TaskFragment.tasks.add(nTask);
+                    TaskFragment.taskAdapter.notifyDataSetChanged();
                     HelperClass.saveTasks(getActivity());
                     dismiss();
                 }

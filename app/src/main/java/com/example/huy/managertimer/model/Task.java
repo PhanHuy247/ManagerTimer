@@ -13,8 +13,8 @@ public class Task {
     private int aveWTime;
     private double ratio;
 
-    public Task(int color, String title, String beginDate) {
-        this.color = color;
+    public Task(int WTime, String title, String beginDate) {
+        this.WTime = WTime;
         this.title = title;
         this.beginDate = beginDate;
     }

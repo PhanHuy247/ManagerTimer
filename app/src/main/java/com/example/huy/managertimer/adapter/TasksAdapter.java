@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.huy.managertimer.Interface.IOnClickListenerItemDelete;
 import com.example.huy.managertimer.Interface.IOnClickListenerTask;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.model.Task;
@@ -27,6 +28,7 @@ public class TasksAdapter extends BaseAdapter{
     ArrayList<Task> tasks = new ArrayList<>();
     private Context mContext;
     IOnClickListenerTask iOnClickListenerTask;
+    IOnClickListenerItemDelete iOnClickListenerItemDelete;
 
     public TasksAdapter(ArrayList<Task> arrayList, Context mContext){
         this.tasks = arrayList;
@@ -34,6 +36,9 @@ public class TasksAdapter extends BaseAdapter{
     }
     public void setOnItemClick(IOnClickListenerTask iOnClickListenerTask){
         this.iOnClickListenerTask = iOnClickListenerTask;
+    }
+    public void setOnItemClickDelete(IOnClickListenerItemDelete iOnClickListenerTask){
+        this.iOnClickListenerItemDelete = iOnClickListenerTask;
     }
     @Override
     public int getCount() {
@@ -91,6 +96,7 @@ public class TasksAdapter extends BaseAdapter{
                         break;
                     case R.id.imb_setting:
                         Toast.makeText(mContext, "Setting", Toast.LENGTH_SHORT).show();
+                        iOnClickListenerItemDelete.OnclickDelete(postition);
                         break;
                 }
             }

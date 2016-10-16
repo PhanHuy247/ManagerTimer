@@ -20,8 +20,10 @@ import android.util.Log;
 
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.activity.MainActivity;
+import com.example.huy.managertimer.constant.Constant;
 import com.example.huy.managertimer.fragment.ClockFragment;
 import com.example.huy.managertimer.fragment.TaskFragment;
+import com.example.huy.managertimer.utilities.PreferenceUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -89,6 +91,7 @@ public class CountdownService extends Service {
                  min = (int) (millisUntilFinished/60000);
                  sec = (int) ((millisUntilFinished%60000)/1000);
                 String text = min+" : "+sec;
+                PreferenceUtils.setValue(getApplicationContext(), Constant.TIME_STOP,(min*60+sec));
                 ClockFragment.tv_countdown.setText(text);
                 ClockFragment.countdownClock.setValueAnimated((int)millisUntilFinished/1000);
                 if(min == 0 && sec == 0) ClockFragment.countdownClock.setValueAnimated(0);
