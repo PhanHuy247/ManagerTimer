@@ -35,8 +35,13 @@
     <string name="th_ng_b_o">Thông báo</string>
     <string name="kh_c">Khác</string>
 
+    <!-- Date Fragment -->
     <string name="dateFormat">dd/MM/yyyy</string>
     <string name="dateFormat1">dd.MM.yyyy</string>
     <string name="setTaskTitle">SET_TASK_TITLE</string>
     <string name="TASK_POS">task_pos</string>
+
+    <!-- Clock Fragment -->
+    <string name="tiep_tuc_tien">"bạn vừa tiếp tục tiến trình: "</string>
+    <string name="tiep_tuc_hien_tai">bạn cần kết thúc tiến trình hiện tại</string>
 </resources>

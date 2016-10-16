@@ -1,9 +1,6 @@
 package com.example.huy.managertimer.adapter;
 
-import android.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +12,7 @@ import android.widget.Toast;
 import com.example.huy.managertimer.Interface.IOnClickListenerItemDelete;
 import com.example.huy.managertimer.Interface.IOnClickListenerTask;
 import com.example.huy.managertimer.R;
-import com.example.huy.managertimer.model.Task;
-import com.example.huy.managertimer.activity.MainActivity;
+import com.example.huy.managertimer.model.TaskItem;
 
 import java.util.ArrayList;
 
@@ -25,13 +21,13 @@ import java.util.ArrayList;
  */
 
 public class TasksAdapter extends BaseAdapter{
-    ArrayList<Task> tasks = new ArrayList<>();
+    ArrayList<TaskItem> taskItems = new ArrayList<>();
     private Context mContext;
     IOnClickListenerTask iOnClickListenerTask;
     IOnClickListenerItemDelete iOnClickListenerItemDelete;
 
-    public TasksAdapter(ArrayList<Task> arrayList, Context mContext){
-        this.tasks = arrayList;
+    public TasksAdapter(ArrayList<TaskItem> arrayList, Context mContext){
+        this.taskItems = arrayList;
         this.mContext = mContext;
     }
     public void setOnItemClick(IOnClickListenerTask iOnClickListenerTask){
@@ -42,12 +38,12 @@ public class TasksAdapter extends BaseAdapter{
     }
     @Override
     public int getCount() {
-        return tasks.size();
+        return taskItems.size();
     }
 
     @Override
-    public Task getItem(int position) {
-        return tasks.get(position);
+    public TaskItem getItem(int position) {
+        return taskItems.get(position);
     }
 
     @Override

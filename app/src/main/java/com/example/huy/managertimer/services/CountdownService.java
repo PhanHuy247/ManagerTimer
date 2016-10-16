@@ -46,6 +46,7 @@ public class CountdownService extends Service {
 
     public CountdownService() {
     }
+
     public CountDownTimer mCountdownTimer;
     public long millisLeft;
     public static final String ACTION_FINISH = "done";
@@ -54,16 +55,18 @@ public class CountdownService extends Service {
     PendingIntent pendInt;
     int min, sec;
     String title;
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        setBroadcastReceiver();
         int timeInMin = intent.getIntExtra("timeInMin", 25);
-        long timeInMilliSec = timeInMin*60000;
+        long timeInMilliSec = timeInMin * 60000;
         setUpCountdownTimer(timeInMilliSec);
         return START_NOT_STICKY;
     }
-//    private void setBroadcastReceiver() {
+
+    //    private void setBroadcastReceiver() {
 //        receiver = new NotiReceiver();
 //        IntentFilter filter = new IntentFilter();
 //        filter.addAction(ACTION_NEXT);
@@ -78,7 +81,6 @@ public class CountdownService extends Service {
         artwork = BitmapFactory.decodeResource(getResources(), R.drawable.brain_power);
 
 
-
         resultIntent = new Intent(getApplicationContext(), MainActivity.class);
         pendInt = PendingIntent.getActivity(getApplicationContext(), 0,
                 resultIntent,
@@ -88,17 +90,17 @@ public class CountdownService extends Service {
         mCountdownTimer = new CountDownTimer(time, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                 min = (int) (millisUntilFinished/60000);
-                 sec = (int) ((millisUntilFinished%60000)/1000);
-                String text = min+" : "+sec;
-                PreferenceUtils.setValue(getApplicationContext(), Constant.TIME_STOP,(min*60+sec));
+                min = (int) (millisUntilFinished / 60000);
+                sec = (int) ((millisUntilFinished % 60000) / 1000);
+                String text = min + " : " + sec;
+              //  PreferenceUtils.setValue(getApplicationContext(), Constant.TIME_STOP, (min * 60 + sec));
                 ClockFragment.tv_countdown.setText(text);
-                ClockFragment.countdownClock.setValueAnimated((int)millisUntilFinished/1000);
-                if(min == 0 && sec == 0) ClockFragment.countdownClock.setValueAnimated(0);
+                ClockFragment.countdownClock.setValueAnimated((int) millisUntilFinished / 1000);
+                if (min == 0 && sec == 0) ClockFragment.countdownClock.setValueAnimated(0);
                 millisLeft = millisUntilFinished;
                 ClockFragment.imb_pause.setImageResource(R.drawable.ic_pause_black_24dp);
                 ClockFragment.curCountdownStr = text;
-                mBuilder.setContentText(min+" : "+(sec-1)+" - "+title);
+                mBuilder.setContentText(min + " : " + (sec - 1) + " - " + title);
                 Notification not = mBuilder.build();
                 NotificationManager mNotificationManager =
                         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -108,16 +110,15 @@ public class CountdownService extends Service {
 
             public void onFinish() {
 
-                if (isWorking){
-                    if (ClockFragment.position!=-1){
-                        int wTime = TaskFragment.tasks.get(ClockFragment.position).getWTime()+(int) (time/60000);
-                        TaskFragment.tasks.get(ClockFragment.position).setWTime(wTime);
-                        Log.d("workTime", wTime+"");
-                    }
-                    else {
-                        int wTime = TaskFragment.defaultTask.getWTime() + (int) (time/60000);
-                        TaskFragment.defaultTask.setWTime(wTime);
-                        Log.d("workTime", wTime+"");
+                if (isWorking) {
+                    if (ClockFragment.position != -1) {
+                        int wTime = TaskFragment.taskItems.get(ClockFragment.position).getWTime() + (int) (time / 60000);
+                        TaskFragment.taskItems.get(ClockFragment.position).setWTime(wTime);
+                        Log.d("workTime", wTime + "");
+                    } else {
+                        int wTime = TaskFragment.defaultTaskItem.getWTime() + (int) (time / 60000);
+                        TaskFragment.defaultTaskItem.setWTime(wTime);
+                        Log.d("workTime", wTime + "");
                     }
                     saveDateStat(time);
 
@@ -125,7 +126,6 @@ public class CountdownService extends Service {
 
                 Intent intent = new Intent(ACTION_FINISH);
                 sendBroadcast(intent);
-
 
 
             }
@@ -142,39 +142,35 @@ public class CountdownService extends Service {
         set.add(title);
         editor.putStringSet(getString(R.string.setTaskTitle), set);
         int wTime = datePrefs.getInt(title, 0);
-        wTime += (int) time/60000;
+        wTime += (int) time / 60000;
         editor.putInt(title, wTime);
         editor.commit();
     }
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public Notification.Builder setupNotification () {
+    public Notification.Builder setupNotification() {
         Notification.Builder mBuilder = new Notification.Builder(CountdownService.this);
         int pos = ClockFragment.position;
         String text;
-        if (pos==-1){
-            title = "defaultTask";
-        }
-        else {
-            title = TaskFragment.tasks.get(pos).getTitle();
+        if (pos == -1) {
+            title = "defaultTaskItem";
+        } else {
+            title = TaskFragment.taskItems.get(pos).getTitle();
         }
 
         int pauseID;
-        if (isOnSess){
-            if (isCounting){
+        if (isOnSess) {
+            if (isCounting) {
                 pauseID = R.drawable.ic_pause_black_24dp;
                 text = "pause";
-            }
-            else {
+            } else {
                 pauseID = R.drawable.ic_play_arrow_black_24dp;
             }
-        }
-        else {
-            if (isWorking){
+        } else {
+            if (isWorking) {
                 pauseID = R.drawable.ic_airline_seat_flat_black_24dp;
-            }
-            else {
+            } else {
                 pauseID = R.drawable.ic_airline_seat_recline_normal_black_24dp;
             }
         }
@@ -183,12 +179,12 @@ public class CountdownService extends Service {
                 .setSmallIcon(R.drawable.ic_timelapse_black_24dp)
                 .setShowWhen(false)
 
-                .setContentText(min+" : "+((sec-1)>0?sec-1:0)+" - "+title)
+                .setContentText(min + " : " + ((sec - 1) > 0 ? sec - 1 : 0) + " - " + title)
                 .setContentTitle(getString(R.string.app_name))
 
                 // Add some playback controls
                 .setPriority(Notification.PRIORITY_MAX)
-                .setTicker("Doing "+title)
+                .setTicker("Doing " + title)
                 .setContentIntent(pendInt)
 
 //                    .addAction(R.drawable.ic_skip_previous_white_36dp, "prev", retreivePlaybackAction(3))
@@ -196,10 +192,12 @@ public class CountdownService extends Service {
                 .addAction(R.drawable.ic_skip_next_black_24dp, "next", retreivePlaybackAction(2))
                 .addAction(R.drawable.ic_stop_black_24dp, "stop", retreivePlaybackAction(4));
 
-        Notification not = mBuilder.build();;
+        Notification not = mBuilder.build();
+        ;
         startForeground(NOTIFY_ID, not);
         return mBuilder;
     }
+
     private PendingIntent retreivePlaybackAction(int which) {
         Intent action;
         PendingIntent pendingIntent;
@@ -229,6 +227,7 @@ public class CountdownService extends Service {
         }
         return null;
     }
+
     @Override
     public void onDestroy() {
 //        unregisterReceiver(receiver);
@@ -276,7 +275,7 @@ public class CountdownService extends Service {
 
 
     public class MyBinder extends Binder {
-        public CountdownService getService(){
+        public CountdownService getService() {
             return CountdownService.this;
         }
     }

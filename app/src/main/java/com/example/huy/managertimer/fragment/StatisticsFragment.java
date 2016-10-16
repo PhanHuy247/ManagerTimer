@@ -49,7 +49,7 @@ public class StatisticsFragment extends Fragment implements IOnStatisticsClickLi
     }
 
     private void setupView(View view) {
-        createDataForRecycler();
+
         rvStatistics = (RecyclerView) view.findViewById(R.id.rvStatistics);
         statisticAdapter = new StatisticsAdapter(getContext(), listStatistic);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -64,7 +64,7 @@ public class StatisticsFragment extends Fragment implements IOnStatisticsClickLi
         for (int i = 0; i < 7; i++) {
 
             String month_name = month_date.format(calendar.getTime());
-            listStatistic.add(new StatisticsItem(month_name + " " + (calendar.get(Calendar.DATE) - i), getActivity().getSharedPreferences(getResources().getString(R.string.setting_pref), Context.MODE_PRIVATE).getInt(calendar.get(Calendar.DATE)+"work",0)+"", "00:12", PreferenceUtils.getValue(getActivity(),calendar.get(Calendar.DATE) + "break",0)+"", "02:2"));
+            listStatistic.add(new StatisticsItem(month_name + " " + (calendar.get(Calendar.DATE) - i), PreferenceUtils.getValue(getActivity(), calendar.get(Calendar.DATE) + "work", 0) + "", "00:00", PreferenceUtils.getValue(getActivity(), calendar.get(Calendar.DATE) + "break", 0) + "", "00:00"));
         }
 
 //        if (dayMonthAgo < 7) {
@@ -79,35 +79,37 @@ public class StatisticsFragment extends Fragment implements IOnStatisticsClickLi
 //        }
     }
 
+    @Override
+    public void onResume() {
+        createDataForRecycler();
+        statisticAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
 
     @Override
     public void onClick(final StatisticsItem statisticsItem) {
-            new AlertDialog.Builder(getContext())
-                    .setIcon(R.mipmap.ic_launcher)
-                    .setMessage("Are you sure reset")
-                    .setPositiveButton("OK", null)
-                    .setNegativeButton("Cancel", null)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            statisticsItem.setTvNumberBreak("0");
-                            statisticsItem.setTvNumberWork("0");
-                            statisticsItem.setTvTimeBreak("0");
-                            statisticsItem.setTvTimeWork("0");
-                            statisticAdapter.notifyDataSetChanged();
-                            getActivity().getSharedPreferences(getResources().getString(R.string.setting_pref),0).edit().putInt(calendar.get(Calendar.DATE)+"work",0).apply();
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            Toast.makeText(getActivity(), "You've Cancle Reset", Toast.LENGTH_SHORT).show();
-                        }
-                    }).show();
+        new AlertDialog.Builder(getContext())
+                .setIcon(R.mipmap.ic_launcher)
+                .setMessage("Are you sure reset")
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        statisticsItem.setTvNumberBreak("0");
+                        statisticsItem.setTvNumberWork("0");
+                        statisticsItem.setTvTimeBreak("0");
+                        statisticsItem.setTvTimeWork("0");
+                        statisticAdapter.notifyDataSetChanged();
+                        getActivity().getSharedPreferences(getResources().getString(R.string.setting_pref), 0).edit().putInt(calendar.get(Calendar.DATE) + "work", 0).apply();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getActivity(), "You've Cancle Reset", Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 
 }

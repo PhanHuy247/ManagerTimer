@@ -6,12 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,25 +18,24 @@ import com.example.huy.managertimer.Interface.IOnClickListenerItemDelete;
 import com.example.huy.managertimer.Interface.IOnClickListenerTask;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.activity.MainActivity;
-import com.example.huy.managertimer.adapter.ViewPageAdapter;
 import com.example.huy.managertimer.constant.Constant;
-import com.example.huy.managertimer.model.Task;
+import com.example.huy.managertimer.model.TaskItem;
 import com.example.huy.managertimer.adapter.TasksAdapter;
 import com.example.huy.managertimer.utilities.PreferenceUtils;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaskFragment extends Fragment implements IOnClickListenerTask,IOnClickListenerItemDelete{
-    public static ArrayList<Task> tasks = new ArrayList<>();
-    public static Task defaultTask = new Task(0, "","");
+public class TaskFragment extends Fragment implements IOnClickListenerTask, IOnClickListenerItemDelete {
+    public static ArrayList<TaskItem> taskItems = new ArrayList<>();
+    public static TaskItem defaultTaskItem = new TaskItem(0, "", "");
     public static TasksAdapter taskAdapter;
 
     ListView lv_tasks;
     private FloatingActionButton fabMain;
+
     public TaskFragment() {
 
     }
@@ -74,7 +69,7 @@ public class TaskFragment extends Fragment implements IOnClickListenerTask,IOnCl
     @Override
     public void onResume() {
         super.onResume();
-        taskAdapter = new TasksAdapter(tasks, getActivity());
+        taskAdapter = new TasksAdapter(taskItems, getActivity());
         lv_tasks.setAdapter(taskAdapter);
         taskAdapter.setOnItemClick(this);
         taskAdapter.setOnItemClickDelete(this);
@@ -83,12 +78,12 @@ public class TaskFragment extends Fragment implements IOnClickListenerTask,IOnCl
     @Override
     public void clickItem(int position) {
         Intent intent = new Intent(getActivity(), MainActivity.class);
-//        intent.putExtra(Constant.TASK_FRAGMENT,tasks.get(position).getTitle());
-//        intent.putExtra(Constant.TASK_FRAGMENT_WORK,tasks.get(position).getWTime());
-//        PreferenceUtils.setValue(getActivity(),Constant.TASK_SEND,true);
+        intent.putExtra(Constant.TASK_FRAGMENT, taskItems.get(position).getTitle());
+        intent.putExtra(Constant.TASK_FRAGMENT_WORK, taskItems.get(position).getWTime());
+        PreferenceUtils.setValue(getActivity(), Constant.TASK_SEND, true);
         startActivity(intent);
         getActivity().finish();
-        Toast.makeText(getActivity().getApplicationContext(),"ban vua tiep tuc tien trinh: " + tasks.get(position).getTitle(),Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.tiep_tuc_tien) + taskItems.get(position).getTitle(), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -98,20 +93,16 @@ public class TaskFragment extends Fragment implements IOnClickListenerTask,IOnCl
                 .setMessage("Are you sure delete")
                 .setPositiveButton("OK", null)
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        tasks.remove(position);
+                    public void onClick(DialogInterface dialog, int which) {
+                        taskItems.remove(position);
                         taskAdapter.notifyDataSetChanged();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                {
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
+                    public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(getActivity(), "You've Cancle Delete", Toast.LENGTH_SHORT).show();
                     }
                 }).show();

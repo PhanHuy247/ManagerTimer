@@ -4,7 +4,7 @@ package com.example.huy.managertimer.model;
  * Created by Laptop88 on 10/10/2016.
  */
 
-public class Task {
+public class TaskItem {
     private int color;
     private String title;
     private String beginDate;
@@ -13,7 +13,7 @@ public class Task {
     private int aveWTime;
     private double ratio;
 
-    public Task(int WTime, String title, String beginDate) {
+    public TaskItem(int WTime, String title, String beginDate) {
         this.WTime = WTime;
         this.title = title;
         this.beginDate = beginDate;

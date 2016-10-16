@@ -22,7 +22,7 @@ public class Constant {
     public static final String NO_TASK = "no_task";
     public static final String NUMBER_TASK = "number_task";
 
-    public static final String DEFAULT_TASK ="defaultTask";
+    public static final String DEFAULT_TASK ="defaultTaskItem";
     public static final String TASK_INFO = "TASKS_INFOS";
 
     public static final String MAX_CIRCLE = "max_circle";

@@ -71,10 +71,10 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setOnViewClick() {
-        setOnSeekBarChange(sb_wTime, tv_wTime);
-        setOnSeekBarChange(sb_bTime, tv_bTime);
-        setOnSeekBarChange(sb_longBTime, tv_longBTime);
-        setOnSeekBarChange(sb_SessBefLongBTime, tv_SessBefLongBTime);
+        setOnSeekBarChange(sb_wTime, tv_wTime,10);
+        setOnSeekBarChange(sb_bTime, tv_bTime,1);
+        setOnSeekBarChange(sb_longBTime, tv_longBTime,30);
+        setOnSeekBarChange(sb_SessBefLongBTime, tv_SessBefLongBTime,3);
 
         ivArrowSetting.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +150,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void setOnSeekBarChange(SeekBar sb, final TextView tv) {
+    private void setOnSeekBarChange(SeekBar sb, final TextView tv,final int max) {
 
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -167,7 +167,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if (seekBar.getProgress() == 0) {
-                    seekBar.setProgress(1);
+                    seekBar.setProgress(max);
                 }
             }
         });

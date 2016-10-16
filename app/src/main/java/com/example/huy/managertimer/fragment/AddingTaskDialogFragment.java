@@ -1,6 +1,5 @@
 package com.example.huy.managertimer.fragment;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -19,7 +18,7 @@ import android.widget.TextView;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.constant.Constant;
 import com.example.huy.managertimer.databases.HelperClass;
-import com.example.huy.managertimer.model.Task;
+import com.example.huy.managertimer.model.TaskItem;
 import com.example.huy.managertimer.utilities.PreferenceUtils;
 
 import java.text.DateFormat;
@@ -30,7 +29,7 @@ import java.util.Date;
  * Created by Laptop88 on 10/11/2016.
  */
 
-public class AddingTaskDialogFragment extends DialogFragment implements View.OnClickListener{
+public class AddingTaskDialogFragment extends DialogFragment implements View.OnClickListener {
     EditText edt_title;
     Button imb_cancel, imb_save;
     TextView tvTitle;
@@ -62,16 +61,16 @@ public class AddingTaskDialogFragment extends DialogFragment implements View.OnC
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.imb_cancle:
                 dismiss();
                 break;
             case R.id.imb_save:
-                if (!edt_title.getText().equals("")){
+                if (!edt_title.getText().equals("")) {
                     DateFormat dateFormat = new SimpleDateFormat(getString(R.string.dateFormat));
                     Date date = new Date();
-                    Task nTask = new Task(PreferenceUtils.getValue(getActivity(), Constant.TIME_STOP,0), edt_title.getText().toString(), dateFormat.format(date));
-                    TaskFragment.tasks.add(nTask);
+                    TaskItem nTaskItem = new TaskItem(PreferenceUtils.getValue(getActivity(), Constant.TIME_STOP, 0), edt_title.getText().toString(), dateFormat.format(date));
+                    TaskFragment.taskItems.add(nTaskItem);
                     TaskFragment.taskAdapter.notifyDataSetChanged();
                     HelperClass.saveTasks(getActivity());
                     dismiss();

@@ -18,7 +18,6 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +29,11 @@ import android.widget.Toast;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.constant.Constant;
 import com.example.huy.managertimer.databases.HelperClass;
-import com.example.huy.managertimer.model.Task;
 import com.example.huy.managertimer.services.CountdownService;
 import com.example.huy.managertimer.utilities.GlideUtils;
 import com.example.huy.managertimer.utilities.PreferenceUtils;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 
 import at.grabner.circleprogress.CircleProgressView;
 
@@ -94,8 +91,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
     }
 
     private void resetCoundownTimer(int position) {
-        tv_taskTitle.setText(TaskFragment.tasks.get(position).getTitle());
-
+        tv_taskTitle.setText(TaskFragment.taskItems.get(position).getTitle());
         imb_start.setVisibility(View.GONE);
         imb_break.setVisibility(View.GONE);
         imb_skipNext.setVisibility(View.VISIBLE);
@@ -122,35 +118,34 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         GlideUtils.loadCircleImage(getActivity(), "https://migreat.files.wordpress.com/2014/07/man-with-laptop-sitting-and-thinking-baloon-in-background-flickr-nic519.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
         countdownClock.setMaxValue(PreferenceUtils.getValue(getActivity(), Constant.MAX_CIRCLE, 0));
-//        if (PreferenceUtils.getValue(getActivity(), Constant.TASK_SEND, false)) {
-//
-//            if (isCounting) {
-//                Log.d("phanhuy", isCounting + "");
-//                Toast.makeText(getActivity().getApplicationContext(), "bạn cần kết thúc tiến trình hiện tại", Toast.LENGTH_LONG).show();
-//            } else {
-//                if (wTime != 0) {
-//                    isCounting = true;
-//                    isWorking = true;
-//                    setUpService();
-//                    imb_start.setVisibility(View.GONE);
-//                    imb_break.setVisibility(View.GONE);
-//                    imb_skipNext.setVisibility(View.VISIBLE);
-//                    imb_pause.setVisibility(View.VISIBLE);
-//                    imb_stop.setVisibility(View.VISIBLE);
-//
-//                    countdownClock.setMaxValue(wTime * 60);
-////                    Log.d("phanhuy",getActivity().getIntent().getExtras().getInt(Constant.TASK_FRAGMENT_WORK, 0)+"");
-////                    wTime = wTime - getActivity().getIntent().getExtras().getInt(Constant.TASK_FRAGMENT_WORK, 0);
-//                    countdownClock.setValue(wTime * 60);
-//                    PreferenceUtils.setValue(getActivity(), Constant.MAX_CIRCLE, wTime * 60);
-//                    countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
-//                    GlideUtils.loadCircleImage(getActivity(), "https://thumbs.dreamstime.com/z/happy-businessman-work-below-black-clouds-white-background-35044869.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
-//                    PreferenceUtils.setValue(getActivity(), Constant.TASK_SEND, false);
-//
-//                }
-//            }
-//
-//        }
+        if (PreferenceUtils.getValue(getActivity(), Constant.TASK_SEND, false)) {
+
+            if (isCounting) {
+                Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.tiep_tuc_hien_tai), Toast.LENGTH_LONG).show();
+            } else {
+                if (wTime != 0) {
+                    isCounting = true;
+                    isWorking = true;
+                    setUpService();
+                    imb_start.setVisibility(View.GONE);
+                    imb_break.setVisibility(View.GONE);
+                    imb_skipNext.setVisibility(View.VISIBLE);
+                    imb_pause.setVisibility(View.VISIBLE);
+                    imb_stop.setVisibility(View.VISIBLE);
+
+                    countdownClock.setMaxValue(wTime * 60);
+//                    Log.d("phanhuy",getActivity().getIntent().getExtras().getInt(Constant.TASK_FRAGMENT_WORK, 0)+"");
+                    //     wTime = wTime - getActivity().getIntent().getExtras().getInt(Constant.TASK_FRAGMENT_WORK, 0);
+                    countdownClock.setValue(wTime * 60);
+                    PreferenceUtils.setValue(getActivity(), Constant.MAX_CIRCLE, wTime * 60);
+                    countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
+                    GlideUtils.loadCircleImage(getActivity(), "https://thumbs.dreamstime.com/z/happy-businessman-work-below-black-clouds-white-background-35044869.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
+                    PreferenceUtils.setValue(getActivity(), Constant.TASK_SEND, false);
+
+                }
+            }
+
+        }
     }
 
     private void refreshService() {
@@ -190,7 +185,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         tv_taskTitle = (TextView) view.findViewById(R.id.tv_taskTitle);
         countdownClock = (CircleProgressView) view.findViewById(R.id.count_down_clock);
         ivClock = (ImageView) view.findViewById(R.id.ivClock);
-
+        countdownClock.setMaxValue(PreferenceUtils.getValue(getActivity(), Constant.MAX_CIRCLE, 0));
         GlideUtils.loadCircleImage(getActivity(), "https://migreat.files.wordpress.com/2014/07/man-with-laptop-sitting-and-thinking-baloon-in-background-flickr-nic519.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
         if (imb_skipNext.getVisibility() == View.INVISIBLE || imb_skipNext.getVisibility() == View.GONE) {
             countdownClock.setRimColor(getResources().getColor(R.color.colorPrimary));
@@ -212,7 +207,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
                 tmp = "";
 
             } else {
-                tmp = TaskFragment.tasks.get(position).getTitle();
+                tmp = TaskFragment.taskItems.get(position).getTitle();
             }
             tv_taskTitle.setText(tmp);
 
@@ -308,6 +303,7 @@ public class ClockFragment extends Fragment implements View.OnClickListener {
         imb_stop.setVisibility(View.VISIBLE);
         setUpService();
         countdownClock.setMaxValue(bTime * 60);
+//        PreferenceUtils.setValue(getActivity(), calendar.get(Calendar.DATE) + "work", PreferenceUtils.getValue(getActivity(), calendar.get(Calendar.DATE) + "work", 0) + 1);
         PreferenceUtils.setValue(getActivity(), Constant.MAX_CIRCLE, bTime * 60);
         countdownClock.setRimColor(getResources().getColor(R.color.backgroud_circle));
         GlideUtils.loadCircleImage(getActivity(), "https://thumbs.dreamstime.com/t/businessman-top-mountain-sitting-thinking-image-young-who-sits-looks-distance-to-beautiful-mountains-58395281.jpg", R.mipmap.ic_launcher, R.mipmap.ic_launcher, ivClock);
