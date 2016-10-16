@@ -6,57 +6,37 @@ package com.example.huy.managertimer.model;
  */
 
 public class StatisticsItem {
-    String tvYearMonth;
-    String tvNumberWork;
-    String tvTimeWork;
-    String tvNumberBreak;
-    String tvTimeBreak;
+    private String date;
+    private String dayTimeTotal;
+    private String taskDetail;
 
-    public StatisticsItem(String tvYearMonth, String tvNumberWork, String tvTimeWork, String tvNumberBreak, String tvTimeBreak) {
-        this.tvYearMonth = tvYearMonth;
-        this.tvNumberWork = tvNumberWork;
-        this.tvTimeWork = tvTimeWork;
-        this.tvNumberBreak = tvNumberBreak;
-        this.tvTimeBreak = tvTimeBreak;
+    public StatisticsItem(String date, String dayTimeTotal, String taskDetail) {
+        this.date = date;
+        this.dayTimeTotal = dayTimeTotal;
+        this.taskDetail = taskDetail;
     }
 
-    public String getTvYearMonth() {
-        return tvYearMonth;
+    public String getDate() {
+        return date;
     }
 
-    public void setTvYearMonth(String tvYearMonth) {
-        this.tvYearMonth = tvYearMonth;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getTvNumberWork() {
-        return tvNumberWork;
+    public String getDayTimeTotal() {
+        return dayTimeTotal;
     }
 
-    public void setTvNumberWork(String tvNumberWork) {
-        this.tvNumberWork = tvNumberWork;
+    public void setDayTimeTotal(String dayTimeTotal) {
+        this.dayTimeTotal = dayTimeTotal;
     }
 
-    public String getTvTimeWork() {
-        return tvTimeWork;
+    public String getTaskDetail() {
+        return taskDetail;
     }
 
-    public void setTvTimeWork(String tvTimeWork) {
-        this.tvTimeWork = tvTimeWork;
-    }
-
-    public String getTvNumberBreak() {
-        return tvNumberBreak;
-    }
-
-    public void setTvNumberBreak(String tvNumberBreak) {
-        this.tvNumberBreak = tvNumberBreak;
-    }
-
-    public String getTvTimeBreak() {
-        return tvTimeBreak;
-    }
-
-    public void setTvTimeBreak(String tvTimeBreak) {
-        this.tvTimeBreak = tvTimeBreak;
+    public void setTaskDetail(String taskDetail) {
+        this.taskDetail = taskDetail;
     }
 }

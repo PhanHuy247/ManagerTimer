@@ -1,85 +1,77 @@
 package com.example.huy.managertimer.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.huy.managertimer.Interface.IOnStatisticsClickListener;
+import com.example.huy.managertimer.Interface.IOnClickListenerTask;
 import com.example.huy.managertimer.R;
 import com.example.huy.managertimer.model.StatisticsItem;
 
 import java.util.ArrayList;
 
 /**
- * Created by Huy on 10/10/2016.
+ * Created by Laptop88 on 10/11/2016.
  */
 
-public class StatisticsAdapter extends RecyclerView.Adapter<StatisticsAdapter.CardViewHolder> {
-
-    private ArrayList<StatisticsItem> statisticsList;
+public class StatisticsAdapter extends BaseAdapter{
+    ArrayList<StatisticsItem> stats = new ArrayList<>();
     private Context mContext;
+    IOnClickListenerTask iOnClickListenerTask;
 
-    IOnStatisticsClickListener onItemClickListener;
-
-    public StatisticsAdapter(Context mContext, ArrayList<StatisticsItem> notificationItems) {
-        this.statisticsList = notificationItems;
+    public StatisticsAdapter(ArrayList<StatisticsItem> arrayList, Context mContext){
+        this.stats = arrayList;
         this.mContext = mContext;
     }
-
-    public void setOnItemClickListener(IOnStatisticsClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
+    public void setOnItemClick(IOnClickListenerTask iOnClickListenerTask){
+        this.iOnClickListenerTask = iOnClickListenerTask;
+    }
+    @Override
+    public int getCount() {
+        return stats.size();
     }
 
     @Override
-    public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View itemView = layoutInflater.inflate(R.layout.item_statistics, parent, false);
-        return new CardViewHolder(itemView);
+    public StatisticsItem getItem(int position) {
+        return stats.get(position);
     }
 
     @Override
-    public void onBindViewHolder(CardViewHolder holder, int position) {
-        final StatisticsItem statistic = statisticsList.get(position);
-        holder.tvYearMonth.setText(statisticsList.get(position).getTvYearMonth());
-        holder.tvTimeWork.setText(statisticsList.get(position).getTvTimeWork());
-        holder.tvTimeBreak.setText(statisticsList.get(position).getTvTimeBreak());
-        holder.tvNumberBreak.setText(statisticsList.get(position).getTvNumberBreak());
-        holder.tvNumberWork.setText(statisticsList.get(position).getTvNumberWork());
-        holder.cvStatisticsl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onItemClickListener != null) {
-                    onItemClickListener.onClick(statistic);
-                }
-            }
-        });
+    public long getItemId(int position) {
+        return position;
     }
+
 
     @Override
-    public int getItemCount() {
-        return statisticsList.size();
-    }
+    public View getView(final int position, View convertView, final ViewGroup parent) {
+        if(convertView == null){
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            convertView = inflater.inflate(R.layout.item_statistics, parent, false);
+            StatsHolder holder = new StatsHolder();
+            holder.tv_date = (TextView)convertView.findViewById(R.id.tv_date);
+            holder.tv_dayTimeTotal = (TextView) convertView.findViewById(R.id.tv_dayTimeTotal);
+            holder.tv_taskDetails = (TextView) convertView.findViewById(R.id.tv_taskDetail);
 
-    static class CardViewHolder extends RecyclerView.ViewHolder {
-        TextView tvYearMonth;
-        TextView tvNumberWork;
-        TextView tvTimeWork;
-        TextView tvNumberBreak;
-        TextView tvTimeBreak;
-        CardView cvStatisticsl;
-
-        public CardViewHolder(View itemView) {
-            super(itemView);
-            tvNumberBreak = (TextView) itemView.findViewById(R.id.tvNumberBreak);
-            tvNumberWork = (TextView) itemView.findViewById(R.id.tvNumberWork);
-            tvTimeBreak = (TextView) itemView.findViewById(R.id.tvTimeBreak);
-            tvTimeWork = (TextView) itemView.findViewById(R.id.tvTimeWork);
-            tvYearMonth = (TextView) itemView.findViewById(R.id.tvYearMonthStatistics);
-            cvStatisticsl = (CardView) itemView.findViewById(R.id.cvStatistics);
+            convertView.setTag(holder);
         }
+
+        StatsHolder holder = (StatsHolder) convertView.getTag();
+        holder.tv_date.setText(stats.get(position).getDate());
+        holder.tv_dayTimeTotal.setText(stats.get(position).getDayTimeTotal());
+        holder.tv_taskDetails.setText(stats.get(position).getTaskDetail());
+        return convertView;
+    }
+
+
+    public static class StatsHolder {
+        public TextView tv_date;
+        public TextView tv_dayTimeTotal;
+        public TextView tv_taskDetails;
+
     }
 }
